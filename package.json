@@ -1,7 +1,7 @@
 {
-  "name": "bolt-js-starter-template",
+  "name": "bolt-js-assistant-template",
   "version": "1.0.0",
-  "description": "A scaffold template for Slack apps",
+  "description": "A template for building Slack app Assistants",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
@@ -16,14 +16,15 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/slack-samples/bolt-js-starter-template.git"
+    "url": "https://github.com/slack-samples/bolt-js-assistant-template.git"
   },
   "bugs": {
-    "url": "https://github.com/slack-samples/bolt-js-starter-template/issues"
+    "url": "https://github.com/slack-samples/bolt-js-assistant-template/issues"
   },
   "dependencies": {
-    "@slack/bolt": "^3.19.0",
-    "dotenv": "~16.4.5"
+    "@slack/bolt": "^3.21.4",
+    "dotenv": "~16.4.5",
+    "openai": "^4.63.0"
   },
   "devDependencies": {
     "eslint": "~8.57.0",
