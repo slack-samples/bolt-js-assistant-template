@@ -12,6 +12,7 @@
     },
     "rules": {
         "object-curly-newline": "off",
-        "camelcase": "off"
+        "camelcase": "off",
+        "no-console": "off"
     }
 }
