@@ -29,8 +29,8 @@ const assistant = new Assistant({
   * This can happen via DM with the app or as a side-container within a channel.
   * https://api.slack.com/events/assistant_thread_started
   */
-  threadStarted: async ({ client, event }) => {
-    const { channel_id, thread_ts, context } = event.assistant_thread;
+  threadStarted: async ({ event, say, setSuggestedPrompts }) => {
+    const { context } = event.assistant_thread;
 
     try {
       // Since context is not sent along with individual user messages, it's necessary to keep
@@ -38,9 +38,7 @@ const assistant = new Assistant({
       // message to the user with context metadata facilitates this, and allows us to update it
       // whenever the user changes context (via the `assistant_thread_context_changed` event).
       // !! Please note: this is only intended for development and demonstrative purposes.
-      await client.chat.postMessage({
-        channel: channel_id,
-        thread_ts,
+      await say({
         text: 'Hi, how can I help?',
         metadata: { event_type: 'assistant_thread_context', event_payload: context },
       });
@@ -65,11 +63,7 @@ const assistant = new Assistant({
        * Provide the user up to 4 optional, preset prompts to choose from.
        * https://api.slack.com/methods/assistant.threads.setSuggestedPrompts
        */
-      await client.assistant.threads.setSuggestedPrompts({
-        channel_id,
-        thread_ts,
-        prompts,
-      });
+      await setSuggestedPrompts({ prompts });
     } catch (e) {
       console.error(e);
     }
@@ -116,7 +110,7 @@ const assistant = new Assistant({
   * be deduced based on their shape and metadata (if provided).
   * https://api.slack.com/events/message
   */
-  userMessage: async ({ client, context, message }) => {
+  userMessage: async ({ client, context, message, say, setTitle, setStatus }) => {
     const { channel, channel_type, subtype, thread_ts } = message;
 
     // Do not process message if not a message intended for the Assistant.
@@ -130,21 +124,13 @@ const assistant = new Assistant({
        * as a way to facilitate future reference by the user.
        * https://api.slack.com/methods/assistant.threads.setTitle
        */
-      await client.assistant.threads.setTitle({
-        channel_id: channel,
-        thread_ts,
-        title: message.text,
-      });
+      await setTitle({ title: message.text });
 
       /**
        * Set the status of the Assistant to give the appearance of active processing.
        * https://api.slack.com/methods/assistant.threads.setStatus
        */
-      await client.assistant.threads.setStatus({
-        channel_id: channel,
-        thread_ts,
-        status: 'is typing..',
-      });
+      await setStatus({ status: 'is typing..' });
 
       /** Scenario 1: Handle suggested prompt selection
        * The example below uses a prompt that relies on the context (channel) in which
@@ -205,11 +191,7 @@ const assistant = new Assistant({
         });
 
         // Provide a response to the user
-        await client.chat.postMessage({
-          channel,
-          thread_ts,
-          text: llmResponse.choices[0].message.content,
-        });
+        await say({ text: llmResponse.choices[0].message.content });
 
         return;
       }
@@ -246,19 +228,12 @@ const assistant = new Assistant({
       });
 
       // Provide a response to the user
-      await client.chat.postMessage({
-        channel,
-        thread_ts,
-        text: llmResponse.choices[0].message.content,
-      });
+      await say({ text: llmResponse.choices[0].message.content });
     } catch (e) {
       console.error(e);
 
-      await client.assistant.threads.setStatus({
-        channel_id: channel,
-        thread_ts,
-        status: '',
-      });
+      // Send message to advise user and clear processing status if a failure occurs
+      await say({ text: 'Sorry, something went wrong!' });
     }
   },
 });
