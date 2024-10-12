@@ -1,4 +1,5 @@
 const { App, LogLevel, Assistant } = require('@slack/bolt');
+const { AssistantThreadContextStore } = require('@slack/bolt/dist/Assistant');
 const { config } = require('dotenv');
 const { OpenAI } = require('openai');
 
@@ -24,6 +25,75 @@ When you include markdown text, convert them to Slack compatible ones.
 When a prompt has Slack's special syntax like <@USER_ID> or <#CHANNEL_ID>, you must keep them as-is in your response.`;
 
 const assistant = new Assistant({
+ /**
+  * (Optional) A custom ThreadContextStore can be provided, inclusive of methods to
+  * get and save context. When provided, these methods will override the `getThreadContext` and
+  * `saveThreadContext` utilities that are available in other Assistant event listeners.
+  */
+  threadContextStore: {
+    get: async ({ context, client, payload }) => { 
+      console.log('***********************************************');
+      console.log('CUSTOM THREAD CONTEXT STORE : GET CALLED');
+      console.log('***********************************************');
+
+      const { channelId: channel, threadTs: thread_ts } = extractThreadInfo(payload);
+  
+      // Retrieve the current thread history
+      const thread = await client.conversations.replies({
+        channel,
+        ts: thread_ts,
+        oldest: thread_ts,
+        include_all_metadata: true,
+        limit: 4,
+      });
+  
+      if (!thread.messages) return {};
+  
+      // Find the first message in the thread that holds the current context using metadata.
+      // See createSaveThreadContext below for a description and explanation for this approach.
+      const initialMsg = thread.messages.find((m) => !m.subtype && m.user === context.botUserId);
+      const threadContext = initialMsg && initialMsg.metadata ? initialMsg.metadata.event_payload : null;
+  
+      return threadContext || {};
+     },
+    save: async ({ context, client, payload }) => {
+      console.log('***********************************************');
+      console.log('CUSTOM THREAD CONTEXT STORE : SAVE CALLED');
+      console.log('***********************************************');
+
+      const { channelId: channel, threadTs: thread_ts, context: threadContext } = extractThreadInfo(payload);
+  
+      // Retrieve first several messages from the current Assistant thread
+      const thread = await client.conversations.replies({
+        channel,
+        ts: thread_ts,
+        oldest: thread_ts,
+        include_all_metadata: true,
+        limit: 4,
+      });
+  
+      if (!thread.messages) return;
+  
+      // Find and update the initial Assistant message with the new context to ensure the
+      // thread always contains the most recent context that user is sending messages from.
+      const initialMsg = thread.messages.find((m) => !m.subtype && m.user === context.botUserId);
+      if (initialMsg) {
+        const { ts, text, blocks } = initialMsg;
+        await client.chat.update({
+          channel,
+          ts,
+          text,
+          blocks,
+          metadata: {
+            event_type: 'assistant_thread_context',
+            event_payload: threadContext,
+          },
+        });
+      }
+      console.log('CONTEXT SAVED VIA CUSTOM GET => ', threadContext);
+    },
+  },
+
   /**
   * `assistant_thread_started` is sent when a user opens the Assistant container.
   * This can happen via DM with the app or as a side-container within a channel.
@@ -71,35 +141,14 @@ const assistant = new Assistant({
 
   /**
   * `assistant_thread_context_changed` is sent when a user switches channels
-  * while the Assistant container is open.
+  * while the Assistant container is open. If `threadContextChanged` is not 
+  * provided, context will be saved using the AssistantContextStore's `save` 
+  * method (either the DefaultAssistantContextStore or custom, if provided).
   * https://api.slack.com/events/assistant_thread_context_changed
   */
-  threadContextChanged: async ({ client, event, context }) => {
-    const { channel_id, thread_ts, context: assistantContext } = event.assistant_thread;
-
+  threadContextChanged: async ({ saveThreadContext }) => {    
     try {
-      // Retrieve first several messages from the current Assistant thread
-      const thread = await client.conversations.replies({
-        channel: channel_id,
-        ts: thread_ts,
-        oldest: thread_ts,
-        include_all_metadata: true,
-        limit: 4,
-      });
-
-      // Find and update the initial Assistant message with the new context to ensure the
-      // thread always contains the most recent context that user is sending messages from.
-      const initialMsg = thread.messages.find((m) => !m.subtype && m.user === context.botUserId);
-      if (initialMsg) {
-        const { ts, text, blocks } = initialMsg;
-        await client.chat.update({
-          channel: channel_id,
-          ts,
-          text,
-          blocks,
-          metadata: { event_type: 'assistant_thread_context', event_payload: assistantContext },
-        });
-      }
+      await saveThreadContext();
     } catch (e) {
       console.error(e);
     }
@@ -110,13 +159,8 @@ const assistant = new Assistant({
   * be deduced based on their shape and metadata (if provided).
   * https://api.slack.com/events/message
   */
-  userMessage: async ({ client, context, message, say, setTitle, setStatus }) => {
-    const { channel, channel_type, subtype, thread_ts } = message;
-
-    // Do not process message if not a message intended for the Assistant.
-    // For all other messages types, we recommend separate message handlers.
-    const isAssistantMessage = channel_type === 'im' && (!subtype || subtype === 'file_share');
-    if (!isAssistantMessage) return;
+  userMessage: async ({ client, message, getThreadContext, say, setTitle, setStatus }) => {
+    const { channel, thread_ts } = message;
 
     try {
       /**
@@ -124,33 +168,20 @@ const assistant = new Assistant({
        * as a way to facilitate future reference by the user.
        * https://api.slack.com/methods/assistant.threads.setTitle
        */
-      await setTitle({ title: message.text });
+      await setTitle(message.text);
 
       /**
        * Set the status of the Assistant to give the appearance of active processing.
        * https://api.slack.com/methods/assistant.threads.setStatus
        */
-      await setStatus({ status: 'is typing..' });
+      await setStatus('is typing..');
 
       /** Scenario 1: Handle suggested prompt selection
        * The example below uses a prompt that relies on the context (channel) in which
        * the user has asked the question (in this case, to summarize that channel).
       */
       if (message.text === 'Assistant, please summarize the activity in this channel!') {
-        // Retrieve the current thread history
-        const thread = await client.conversations.replies({
-          channel,
-          ts: thread_ts,
-          oldest: thread_ts,
-          include_all_metadata: true,
-          limit: 4,
-        });
-
-        // Find the first message in the thread that holds the current context using metadata.
-        // See threadContextChanged above for a description and explanation for this approach.
-        const initialMsg = thread.messages.find((m) => !m.subtype && m.user === context.botUserId);
-        const threadContext = initialMsg && initialMsg.metadata
-          ? initialMsg.metadata.event_payload : null;
+        const threadContext = await getThreadContext();
         let channelHistory;
 
         try {
@@ -249,3 +280,35 @@ app.assistant(assistant);
     console.error('Failed to start the app', error);
   }
 })();
+
+
+function extractThreadInfo(payload) {
+  let channelId = '';
+  let threadTs = '';
+  let context = {};
+
+  // assistant_thread_started, asssistant_thread_context_changed
+  if ('assistant_thread' in payload) {
+    channelId = payload.assistant_thread.channel_id;
+    threadTs = payload.assistant_thread.thread_ts;
+    context = payload.assistant_thread.context;
+  }
+
+  // user message in thread
+  if ('channel' in payload && 'thread_ts' in payload && payload.thread_ts !== undefined) {
+    channelId = payload.channel;
+    threadTs = payload.thread_ts;
+  }
+
+  // throw error if `channel` or `thread_ts` are missing
+  if (!channelId || !threadTs) {
+    const missingProps = [];
+    [channelId, threadTs].forEach((key) => { if (key) missingProps.push(key); });
+    if (missingProps.length > 0) {
+      const errorMsg = `Assistant message event is missing required properties: ${missingProps.join(', ')}`;
+      throw new AssistantMissingPropertyError(errorMsg);
+    }
+  }
+
+  return { channelId, threadTs, context };
+}
