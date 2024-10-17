@@ -19,8 +19,7 @@ Join the [Slack Developer Program](https://api.slack.com/developer-program) for 
 3. Copy the contents of [manifest.json](./manifest.json) into the text box that
    says `*Paste your manifest code here*` (within the JSON tab) and click _Next_
 4. Review the configuration and click _Create_
-5. Click _Install_ button and _Allow_ on the screen that follows. You'll then be
-   redirected to the App Settings dashboard.
+5. You'll then be redirected to App Settings. Visit the **Install App** page and install your app.
 
 ### Environment Variables
 
