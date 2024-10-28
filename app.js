@@ -47,11 +47,9 @@ const assistant = new Assistant({
       // track of the context of the conversation to better assist the user. Sending an initial
       // message to the user with context metadata facilitates this, and allows us to update it
       // whenever the user changes context (via the `assistant_thread_context_changed` event).
+      // The `say` utility sends this metadata along automatically behind the scenes.
       // !! Please note: this is only intended for development and demonstrative purposes.
-      await say({
-        text: 'Hi, how can I help?',
-        metadata: { event_type: 'assistant_thread_context', event_payload: context },
-      });
+      await say('Hi, how can I help?');
 
       await saveThreadContext();
 
@@ -74,9 +72,11 @@ const assistant = new Assistant({
 
       /**
        * Provide the user up to 4 optional, preset prompts to choose from.
+       * The optional `title` prop serves as a label above the prompts. If
+       * not, provided, 'Try these prompts:' will be displayed.
        * https://api.slack.com/methods/assistant.threads.setSuggestedPrompts
        */
-      await setSuggestedPrompts({ prompts });
+      await setSuggestedPrompts({ prompts, title: 'Here are some suggested options:' });
     } catch (e) {
       console.error(e);
     }
