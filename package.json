@@ -22,13 +22,13 @@
     "url": "https://github.com/slack-samples/bolt-js-assistant-template/issues"
   },
   "dependencies": {
-    "@slack/bolt": "^4.0.0",
+    "@slack/bolt": "^4.0.1",
     "dotenv": "~16.4.5",
-    "openai": "^4.63.0"
+    "openai": "^4.68.4"
   },
   "devDependencies": {
-    "eslint": "~8.57.0",
+    "eslint": "~9.13.0",
     "eslint-config-airbnb-base": "~15.0.0",
-    "eslint-plugin-import": "~2.29.1"
+    "eslint-plugin-import": "~2.31.0"
   }
 }
