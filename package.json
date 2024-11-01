@@ -24,7 +24,7 @@
   "dependencies": {
     "@slack/bolt": "^4.0.0",
     "dotenv": "~16.4.5",
-    "openai": "^4.63.0"
+    "openai": "^4.69.0"
   },
   "devDependencies": {
     "eslint": "~8.57.0",
