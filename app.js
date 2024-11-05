@@ -25,20 +25,20 @@ When a prompt has Slack's special syntax like <@USER_ID> or <#CHANNEL_ID>, you m
 
 const assistant = new Assistant({
   /**
-  * (Recommended) A custom ThreadContextStore can be provided, inclusive of methods to
-  * get and save thread context. When provided, these methods will override the `getThreadContext`
-  * and `saveThreadContext` utilities that are made available in other Assistant event listeners.
-  */
+   * (Recommended) A custom ThreadContextStore can be provided, inclusive of methods to
+   * get and save thread context. When provided, these methods will override the `getThreadContext`
+   * and `saveThreadContext` utilities that are made available in other Assistant event listeners.
+   */
   // threadContextStore: {
   //   get: async ({ context, client, payload }) => {},
   //   save: async ({ context, client, payload }) => {},
   // },
 
   /**
-  * `assistant_thread_started` is sent when a user opens the Assistant container.
-  * This can happen via DM with the app or as a side-container within a channel.
-  * https://api.slack.com/events/assistant_thread_started
-  */
+   * `assistant_thread_started` is sent when a user opens the Assistant container.
+   * This can happen via DM with the app or as a side-container within a channel.
+   * https://api.slack.com/events/assistant_thread_started
+   */
   threadStarted: async ({ event, say, setSuggestedPrompts, saveThreadContext }) => {
     const { context } = event.assistant_thread;
 
@@ -53,12 +53,15 @@ const assistant = new Assistant({
 
       await saveThreadContext();
 
-      const prompts = [{
-        title: 'This is a suggested prompt',
-        message: 'When a user clicks a prompt, the resulting prompt message text can be passed '
-        + 'directly to your LLM for processing.\n\nAssistant, please create some helpful prompts '
-        + 'I can provide to my users.',
-      }];
+      const prompts = [
+        {
+          title: 'This is a suggested prompt',
+          message:
+            'When a user clicks a prompt, the resulting prompt message text can be passed ' +
+            'directly to your LLM for processing.\n\nAssistant, please create some helpful prompts ' +
+            'I can provide to my users.',
+        },
+      ];
 
       // If the user opens the Assistant container in a channel, additional
       // context is available.This can be used to provide conditional prompts
@@ -83,12 +86,12 @@ const assistant = new Assistant({
   },
 
   /**
-  * `assistant_thread_context_changed` is sent when a user switches channels
-  * while the Assistant container is open. If `threadContextChanged` is not
-  * provided, context will be saved using the AssistantContextStore's `save`
-  * method (either the DefaultAssistantContextStore or custom, if provided).
-  * https://api.slack.com/events/assistant_thread_context_changed
-  */
+   * `assistant_thread_context_changed` is sent when a user switches channels
+   * while the Assistant container is open. If `threadContextChanged` is not
+   * provided, context will be saved using the AssistantContextStore's `save`
+   * method (either the DefaultAssistantContextStore or custom, if provided).
+   * https://api.slack.com/events/assistant_thread_context_changed
+   */
   threadContextChanged: async ({ saveThreadContext }) => {
     // const { channel_id, thread_ts, context: assistantContext } = event.assistant_thread;
     try {
@@ -99,10 +102,10 @@ const assistant = new Assistant({
   },
 
   /**
-  * Messages sent to the Assistant do not contain a subtype and must
-  * be deduced based on their shape and metadata (if provided).
-  * https://api.slack.com/events/message
-  */
+   * Messages sent to the Assistant do not contain a subtype and must
+   * be deduced based on their shape and metadata (if provided).
+   * https://api.slack.com/events/message
+   */
   userMessage: async ({ client, message, getThreadContext, say, setTitle, setStatus }) => {
     const { channel, thread_ts } = message;
 
@@ -123,7 +126,7 @@ const assistant = new Assistant({
       /** Scenario 1: Handle suggested prompt selection
        * The example below uses a prompt that relies on the context (channel) in which
        * the user has asked the question (in this case, to summarize that channel).
-      */
+       */
       if (message.text === 'Assistant, please summarize the activity in this channel!') {
         const threadContext = await getThreadContext();
         let channelHistory;
@@ -149,9 +152,9 @@ const assistant = new Assistant({
 
         // Prepare and tag the prompt and messages for LLM processing
         let llmPrompt = `Please generate a brief summary of the following messages from Slack channel <#${threadContext.channel_id}:`;
-        channelHistory.messages.reverse().forEach((m) => {
+        for (const m of channelHistory.messages.reverse()) {
           if (m.user) llmPrompt += `\n<@${m.user}> says: ${m.text}`;
-        });
+        }
 
         const messages = [
           { role: 'system', content: DEFAULT_SYSTEM_CONTENT },
@@ -173,7 +176,7 @@ const assistant = new Assistant({
 
       /**
        * Scenario 2: Format and pass user messages directly to the LLM
-      */
+       */
 
       // Retrieve the Assistant thread history for context of question being asked
       const thread = await client.conversations.replies({
@@ -189,11 +192,7 @@ const assistant = new Assistant({
         return { role, content: m.text };
       });
 
-      const messages = [
-        { role: 'system', content: DEFAULT_SYSTEM_CONTENT },
-        ...threadHistory,
-        userMessage,
-      ];
+      const messages = [{ role: 'system', content: DEFAULT_SYSTEM_CONTENT }, ...threadHistory, userMessage];
 
       // Send message history and newest question to LLM
       const llmResponse = await openai.chat.completions.create({
