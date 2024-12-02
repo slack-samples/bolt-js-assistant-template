@@ -151,7 +151,7 @@ const assistant = new Assistant({
         }
 
         // Prepare and tag the prompt and messages for LLM processing
-        let llmPrompt = `Please generate a brief summary of the following messages from Slack channel <#${threadContext.channel_id}:`;
+        let llmPrompt = `Please generate a brief summary of the following messages from Slack channel <#${threadContext.channel_id}>:`;
         for (const m of channelHistory.messages.reverse()) {
           if (m.user) llmPrompt += `\n<@${m.user}> says: ${m.text}`;
         }
