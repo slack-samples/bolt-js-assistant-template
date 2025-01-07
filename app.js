@@ -39,7 +39,7 @@ const assistant = new Assistant({
    * This can happen via DM with the app or as a side-container within a channel.
    * https://api.slack.com/events/assistant_thread_started
    */
-  threadStarted: async ({ event, say, setSuggestedPrompts, saveThreadContext }) => {
+  threadStarted: async ({ event, logger, say, setSuggestedPrompts, saveThreadContext }) => {
     const { context } = event.assistant_thread;
 
     try {
@@ -81,7 +81,7 @@ const assistant = new Assistant({
        */
       await setSuggestedPrompts({ prompts, title: 'Here are some suggested options:' });
     } catch (e) {
-      console.error(e);
+      logger.error(e);
     }
   },
 
@@ -92,12 +92,12 @@ const assistant = new Assistant({
    * method (either the DefaultAssistantContextStore or custom, if provided).
    * https://api.slack.com/events/assistant_thread_context_changed
    */
-  threadContextChanged: async ({ saveThreadContext }) => {
+  threadContextChanged: async ({ logger, saveThreadContext }) => {
     // const { channel_id, thread_ts, context: assistantContext } = event.assistant_thread;
     try {
       await saveThreadContext();
     } catch (e) {
-      console.error(e);
+      logger.error(e);
     }
   },
 
@@ -106,7 +106,7 @@ const assistant = new Assistant({
    * be deduced based on their shape and metadata (if provided).
    * https://api.slack.com/events/message
    */
-  userMessage: async ({ client, message, getThreadContext, say, setTitle, setStatus }) => {
+  userMessage: async ({ client, logger, message, getThreadContext, say, setTitle, setStatus }) => {
     const { channel, thread_ts } = message;
 
     try {
@@ -146,7 +146,7 @@ const assistant = new Assistant({
               limit: 50,
             });
           } else {
-            console.error(e);
+            logger.error(e);
           }
         }
 
@@ -204,7 +204,7 @@ const assistant = new Assistant({
       // Provide a response to the user
       await say({ text: llmResponse.choices[0].message.content });
     } catch (e) {
-      console.error(e);
+      logger.error(e);
 
       // Send message to advise user and clear processing status if a failure occurs
       await say({ text: 'Sorry, something went wrong!' });
@@ -218,8 +218,8 @@ app.assistant(assistant);
 (async () => {
   try {
     await app.start();
-    console.log('⚡️ Bolt app is running!');
+    app.logger.info('⚡️ Bolt app is running!');
   } catch (error) {
-    console.error('Failed to start the app', error);
+    app.logger.error('Failed to start the app', error);
   }
 })();
