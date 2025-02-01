@@ -25,7 +25,7 @@
   "dependencies": {
     "@slack/bolt": "^4.2.0",
     "dotenv": "~16.4.7",
-    "openai": "^4.77.3"
+    "openai": "^4.82.0"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4"
