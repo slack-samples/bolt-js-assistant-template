@@ -23,9 +23,11 @@
     "url": "https://github.com/slack-samples/bolt-js-assistant-template/issues"
   },
   "dependencies": {
+    "@huggingface/inference": "^3.8.1",
     "@slack/bolt": "^4.2.1",
+    "axios": "^1.8.4",
     "dotenv": "~16.4.7",
-    "openai": "^4.87.4"
+    "isomorphic-fetch": "^3.0.0"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4"

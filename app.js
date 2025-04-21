@@ -1,6 +1,7 @@
-const { App, LogLevel, Assistant } = require('@slack/bolt');
-const { config } = require('dotenv');
-const { OpenAI } = require('openai');
+require("isomorphic-fetch");
+const { App, LogLevel, Assistant } = require("@slack/bolt");
+const { config } = require("dotenv");
+const { HfInference } = require("@huggingface/inference");
 
 config();
 
@@ -12,10 +13,8 @@ const app = new App({
   logLevel: LogLevel.DEBUG,
 });
 
-/** OpenAI Setup */
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// HuggingFace configuration
+const hfClient = new HfInference(process.env.HUGGINGFACE_API_KEY);
 
 const DEFAULT_SYSTEM_CONTENT = `You're an assistant in a Slack workspace.
 Users in the workspace will ask you to help them write something or to think better about a specific topic.
@@ -162,10 +161,10 @@ const assistant = new Assistant({
         ];
 
         // Send channel history and prepared request to LLM
-        const llmResponse = await openai.chat.completions.create({
-          model: 'gpt-4o-mini',
-          n: 1,
+        const llmResponse = await hfClient.chatCompletion({
+          model: 'Qwen/QwQ-32B',
           messages,
+          max_tokens: 2000,
         });
 
         // Provide a response to the user
@@ -195,10 +194,10 @@ const assistant = new Assistant({
       const messages = [{ role: 'system', content: DEFAULT_SYSTEM_CONTENT }, ...threadHistory, userMessage];
 
       // Send message history and newest question to LLM
-      const llmResponse = await openai.chat.completions.create({
-        model: 'gpt-4o-mini',
-        n: 1,
+      const llmResponse = await hfClient.chatCompletion({
+        model: "Qwen/QwQ-32B",
         messages,
+        max_tokens: 2000,
       });
 
       // Provide a response to the user
