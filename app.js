@@ -1,7 +1,7 @@
-require("isomorphic-fetch");
-const { App, LogLevel, Assistant } = require("@slack/bolt");
-const { config } = require("dotenv");
-const { HfInference } = require("@huggingface/inference");
+//require('isomorphic-fetch');
+const { App, LogLevel, Assistant } = require('@slack/bolt');
+const { config } = require('dotenv');
+const { HfInference } = require('@huggingface/inference');
 
 config();
 
@@ -195,7 +195,7 @@ const assistant = new Assistant({
 
       // Send message history and newest question to LLM
       const llmResponse = await hfClient.chatCompletion({
-        model: "Qwen/QwQ-32B",
+        model: 'Qwen/QwQ-32B',
         messages,
         max_tokens: 2000,
       });
