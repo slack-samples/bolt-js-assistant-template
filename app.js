@@ -1,4 +1,3 @@
-//require('isomorphic-fetch');
 const { App, LogLevel, Assistant } = require('@slack/bolt');
 const { config } = require('dotenv');
 const { HfInference } = require('@huggingface/inference');
