@@ -1,6 +1,6 @@
 const { App, LogLevel, Assistant } = require('@slack/bolt');
 const { config } = require('dotenv');
-const { HfInference } = require('@huggingface/inference');
+const { InferenceClient } = require('@huggingface/inference');
 
 config();
 
@@ -13,7 +13,7 @@ const app = new App({
 });
 
 // HuggingFace configuration
-const hfClient = new HfInference(process.env.HUGGINGFACE_API_KEY);
+const hfClient = new InferenceClient(process.env.HUGGINGFACE_API_KEY);
 
 const DEFAULT_SYSTEM_CONTENT = `You're an assistant in a Slack workspace.
 Users in the workspace will ask you to help them write something or to think better about a specific topic.
