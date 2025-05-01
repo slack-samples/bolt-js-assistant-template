@@ -2,6 +2,8 @@
 
 This Bolt for JavaScript template demonstrates how to build [Agents & Assistants](https://api.slack.com/docs/apps/ai) in Slack.
 
+Models from the [Hugging Face](https://huggingface.co) platform are used and can be customized for prompts of all kinds.
+
 ## Setup
 
 Before getting started, make sure you have a development workspace where you have permissions to install apps. If you don’t have one setup, go ahead and [create one](https://slack.com/create).
@@ -35,6 +37,8 @@ Before you can run the app, you'll need to store some environment variables.
    _App-Level Tokens_ section to create an app-level token with the
    `connections:write` scope. Copy that token into your `.env` as
    `SLACK_APP_TOKEN`.
+
+A fine grained [access token](https://huggingface.co/settings/tokens) with at least the "Make calls to Inference Providers" permission from Hugging Face is also needed. Store this as `HUGGINGFACE_API_KEY`.
 
 ### Local Project
 
