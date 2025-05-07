@@ -23,7 +23,7 @@
     "url": "https://github.com/slack-samples/bolt-js-assistant-template/issues"
   },
   "dependencies": {
-    "@huggingface/inference": "^3.10.0",
+    "@huggingface/inference": "^3.12.1",
     "@slack/bolt": "^4.2.1",
     "dotenv": "~16.5.0"
   },
