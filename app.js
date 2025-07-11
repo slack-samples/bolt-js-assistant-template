@@ -56,26 +56,18 @@ const assistant = new Assistant({
       /**
        * Provide the user up to 4 optional, preset prompts to choose from.
        *
-       * The first `title` prop is an optional label above the prompts that
-       * defaults to 'Try these prompts:' if not provided.
-       *
        * @see {@link https://docs.slack.dev/reference/methods/assistant.threads.setSuggestedPrompts}
        */
-      if (!context.channel_id) {
-        await setSuggestedPrompts({
-          title: 'Start with this suggested prompt:',
-          prompts: [
-            {
-              title: 'This is a suggested prompt',
-              message:
-                'When a user clicks a prompt, the resulting prompt message text ' +
-                'can be passed directly to your LLM for processing.\n\n' +
-                'Assistant, please create some helpful prompts I can provide to ' +
-                'my users.',
-            },
-          ],
-        });
-      }
+      const prompts = [
+        {
+          title: 'This is a suggested prompt',
+          message:
+            'When a user clicks a prompt, the resulting prompt message text ' +
+            'can be passed directly to your LLM for processing.\n\n' +
+            'Assistant, please create some helpful prompts I can provide to ' +
+            'my users.',
+        },
+      ];
 
       /**
        * If the user opens the Assistant container in a channel, additional
@@ -83,16 +75,24 @@ const assistant = new Assistant({
        * that only make sense to appear in that context.
        */
       if (context.channel_id) {
-        await setSuggestedPrompts({
-          title: 'Perform an action based on the channel',
-          prompts: [
-            {
-              title: 'Summarize channel',
-              message: 'Assistant, please summarize the activity in this channel!',
-            },
-          ],
+        prompts.push({
+          title: 'Summarize channel',
+          message: 'Assistant, please summarize the activity in this channel!',
         });
       }
+
+      /**
+       * Set the suggested prompts before the user sends a first message.
+       *
+       * The `title` prop is an optional label above the prompts that defaults
+       * to 'Try these prompts:' if not provided.
+       *
+       * @see {@link https://docs.slack.dev/reference/methods/assistant.threads.setSuggestedPrompts}
+       */
+      await setSuggestedPrompts({
+        title: 'Start with these suggested prompts:',
+        prompts,
+      });
     } catch (e) {
       logger.error(e);
     }
