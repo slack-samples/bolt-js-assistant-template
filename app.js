@@ -51,33 +51,46 @@ const assistant = new Assistant({
 
       await saveThreadContext();
 
-      const prompts = [
-        {
-          title: 'This is a suggested prompt',
-          message:
-            'When a user clicks a prompt, the resulting prompt message text can be passed ' +
-            'directly to your LLM for processing.\n\nAssistant, please create some helpful prompts ' +
-            'I can provide to my users.',
-        },
-      ];
-
-      // If the user opens the Assistant container in a channel, additional
-      // context is available.This can be used to provide conditional prompts
-      // that only make sense to appear in that context (like summarizing a channel).
-      if (context.channel_id) {
-        prompts.push({
-          title: 'Summarize channel',
-          message: 'Assistant, please summarize the activity in this channel!',
+      /**
+       * Provide the user up to 4 optional, preset prompts to choose from.
+       *
+       * The first `title` prop is an optional label above the prompts that
+       * defaults to 'Try these prompts:' if not provided.
+       *
+       * @see {@link https://api.slack.com/methods/assistant.threads.setSuggestedPrompts}
+       */
+      if (!context.channel_id) {
+        await setSuggestedPrompts({
+          title: 'Start with this suggested prompt:',
+          prompts: [
+            {
+              title: 'This is a suggested prompt',
+              message:
+                'When a user clicks a prompt, the resulting prompt message text ' +
+                'can be passed directly to your LLM for processing.\n\n' +
+                'Assistant, please create some helpful prompts I can provide to ' +
+                'my users.',
+            },
+          ],
         });
       }
 
       /**
-       * Provide the user up to 4 optional, preset prompts to choose from.
-       * The optional `title` prop serves as a label above the prompts. If
-       * not, provided, 'Try these prompts:' will be displayed.
-       * https://api.slack.com/methods/assistant.threads.setSuggestedPrompts
+       * If the user opens the Assistant container in a channel, additional
+       * context is available. This can be used to provide conditional prompts
+       * that only make sense to appear in that context.
        */
-      await setSuggestedPrompts({ prompts, title: 'Here are some suggested options:' });
+      if (context.channel_id) {
+        await setSuggestedPrompts({
+          title: 'Perform an action based on the channel',
+          prompts: [
+            {
+              title: 'Summarize channel',
+              message: 'Assistant, please summarize the activity in this channel!',
+            },
+          ],
+        });
+      }
     } catch (e) {
       logger.error(e);
     }
