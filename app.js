@@ -100,11 +100,22 @@ const assistant = new Assistant({
   },
 
   /**
-   * Messages sent to the Assistant do not contain a subtype and must
-   * be deduced based on their shape and metadata (if provided).
-   * https://api.slack.com/events/message
+   * Messages sent from the user to the Assistant are handled in this listener.
+   *
+   * @see {@link https://docs.slack.dev/reference/events/message}
    */
   userMessage: async ({ client, logger, message, getThreadContext, say, setTitle, setStatus }) => {
+    /**
+     * Messages sent to the Assistant can have a specific message subtype.
+     *
+     * Here we check that the message has "text" and was sent to a thread to
+     * skip unexpected message subtypes.
+     *
+     * @see {@link https://docs.slack.dev/reference/events/message#subtypes}
+     */
+    if (!('text' in message) || !('thread_ts' in message) || !message.text || !message.thread_ts) {
+      return;
+    }
     const { channel, thread_ts } = message;
 
     try {
