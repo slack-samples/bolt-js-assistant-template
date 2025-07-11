@@ -18,7 +18,6 @@ const hfClient = new InferenceClient(process.env.HUGGINGFACE_API_KEY);
 const DEFAULT_SYSTEM_CONTENT = `You're an assistant in a Slack workspace.
 Users in the workspace will ask you to help them write something or to think better about a specific topic.
 You'll respond to those questions in a professional way.
-When you include markdown text, convert them to Slack compatible ones.
 When a prompt has Slack's special syntax like <@USER_ID> or <#CHANNEL_ID>, you must keep them as-is in your response.`;
 
 const assistant = new Assistant({
@@ -197,7 +196,15 @@ const assistant = new Assistant({
         });
 
         // Provide a response to the user
-        await say({ text: llmResponse.choices[0].message.content });
+        await say({
+          text: llmResponse.choices[0].message.content,
+          blocks: [
+            {
+              type: 'markdown',
+              text: llmResponse.choices[0].message.content,
+            },
+          ],
+        });
 
         return;
       }
@@ -230,7 +237,15 @@ const assistant = new Assistant({
       });
 
       // Provide a response to the user
-      await say({ text: llmResponse.choices[0].message.content });
+      await say({
+        text: llmResponse.choices[0].message.content,
+        blocks: [
+          {
+            type: 'markdown',
+            text: llmResponse.choices[0].message.content,
+          },
+        ],
+      });
     } catch (e) {
       logger.error(e);
 
