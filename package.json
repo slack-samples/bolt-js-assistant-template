@@ -4,6 +4,7 @@
   "description": "A template for building Slack app Assistants",
   "main": "app.js",
   "scripts": {
+    "check": "npx tsc --checkJs --noEmit --esModuleInterop app.js",
     "start": "node app.js",
     "lint": "npx @biomejs/biome check *.js",
     "lint:fix": "npx @biomejs/biome check --write *.js"
@@ -28,6 +29,8 @@
     "dotenv": "~16.5.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4"
+    "@biomejs/biome": "1.9.4",
+    "@types/node": "^24.0.13",
+    "typescript": "^5.8.3"
   }
 }

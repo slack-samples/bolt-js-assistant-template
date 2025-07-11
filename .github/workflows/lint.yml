@@ -22,3 +22,5 @@ jobs:
         run: npm install
       - name: Run the lint
         run: npm run lint
+      - name: Run the typechecks
+        run: npm run check
