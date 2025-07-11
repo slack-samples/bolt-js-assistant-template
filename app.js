@@ -35,18 +35,21 @@ const assistant = new Assistant({
   /**
    * `assistant_thread_started` is sent when a user opens the Assistant container.
    * This can happen via DM with the app or as a side-container within a channel.
-   * https://api.slack.com/events/assistant_thread_started
+   *
+   * @see {@link https://docs.slack.dev/reference/events/assistant_thread_started}
    */
   threadStarted: async ({ event, logger, say, setSuggestedPrompts, saveThreadContext }) => {
     const { context } = event.assistant_thread;
 
     try {
-      // Since context is not sent along with individual user messages, it's necessary to keep
-      // track of the context of the conversation to better assist the user. Sending an initial
-      // message to the user with context metadata facilitates this, and allows us to update it
-      // whenever the user changes context (via the `assistant_thread_context_changed` event).
-      // The `say` utility sends this metadata along automatically behind the scenes.
-      // !! Please note: this is only intended for development and demonstrative purposes.
+      /**
+       * Since context is not sent along with individual user messages, it's necessary to keep
+       * track of the context of the conversation to better assist the user. Sending an initial
+       * message to the user with context metadata facilitates this, and allows us to update it
+       * whenever the user changes context (via the `assistant_thread_context_changed` event).
+       * The `say` utility sends this metadata along automatically behind the scenes.
+       * !! Please note: this is only intended for development and demonstrative purposes.
+       */
       await say('Hi, how can I help?');
 
       await saveThreadContext();
@@ -57,7 +60,7 @@ const assistant = new Assistant({
        * The first `title` prop is an optional label above the prompts that
        * defaults to 'Try these prompts:' if not provided.
        *
-       * @see {@link https://api.slack.com/methods/assistant.threads.setSuggestedPrompts}
+       * @see {@link https://docs.slack.dev/reference/methods/assistant.threads.setSuggestedPrompts}
        */
       if (!context.channel_id) {
         await setSuggestedPrompts({
@@ -101,7 +104,8 @@ const assistant = new Assistant({
    * while the Assistant container is open. If `threadContextChanged` is not
    * provided, context will be saved using the AssistantContextStore's `save`
    * method (either the DefaultAssistantContextStore or custom, if provided).
-   * https://api.slack.com/events/assistant_thread_context_changed
+   *
+   * @see {@link https://docs.slack.dev/reference/events/assistant_thread_context_changed}
    */
   threadContextChanged: async ({ logger, saveThreadContext }) => {
     // const { channel_id, thread_ts, context: assistantContext } = event.assistant_thread;
@@ -135,13 +139,15 @@ const assistant = new Assistant({
       /**
        * Set the title of the Assistant thread to capture the initial topic/question
        * as a way to facilitate future reference by the user.
-       * https://api.slack.com/methods/assistant.threads.setTitle
+       *
+       * @see {@link https://docs.slack.dev/reference/methods/assistant.threads.setTitle}
        */
       await setTitle(message.text);
 
       /**
        * Set the status of the Assistant to give the appearance of active processing.
-       * https://api.slack.com/methods/assistant.threads.setStatus
+       *
+       * @see {@link https://docs.slack.dev/reference/methods/assistant.threads.setStatus}
        */
       await setStatus('is typing..');
 
