@@ -2,7 +2,8 @@ name: Lint
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
 
 jobs:
@@ -26,5 +27,5 @@ jobs:
         run: npm install
       - name: Run the lint
         run: npm run lint
-      - name: Run the typechecks
+      - name: Run the typechecker
         run: npm run check
