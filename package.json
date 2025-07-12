@@ -29,7 +29,7 @@
     "dotenv": "~17.2.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
+    "@biomejs/biome": "2.1.1",
     "@types/node": "^24.0.13",
     "typescript": "^5.8.3"
   }
