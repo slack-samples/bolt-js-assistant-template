@@ -1,4 +1,5 @@
 const { App, LogLevel, Assistant } = require('@slack/bolt');
+
 const { config } = require('dotenv');
 const { OpenAI } = require('openai');
 // const { HfInference } = require('@huggingface/inference');
@@ -11,6 +12,9 @@ const app = new App({
   appToken: process.env.SLACK_APP_TOKEN,
   socketMode: true,
   logLevel: LogLevel.DEBUG,
+    clientOptions: {
+    slackApiUrl: process.env.SLACK_API_URL || "https://slack.com/api",
+  },
 });
 
 // OpenAI configuration
@@ -234,15 +238,31 @@ const assistant = new Assistant({
         model: 'gpt-4o-mini',
         input: messages,
       });
-      // Huggingface
-      // const llmResponse = await hfClient.chatCompletion({
-      //   model: 'Qwen/QwQ-32B',
-      //   messages,
-      //   max_tokens: 2000,
-      // });
+      // // Huggingface
+      // // const llmResponse = await hfClient.chatCompletion({
+      // //   model: 'Qwen/QwQ-32B',
+      // //   messages,
+      // //   max_tokens: 2000,
+      // // });
 
-      // Provide a response to the user
-      await say({ text: llmResponse.output_text });
+      const streamResponse = await client.chat.startStream({
+        channel: channel,
+        thread_ts: thread_ts
+      });
+
+      const stream_ts = streamResponse["ts"]
+
+      await client.chat.appendStream({
+        channel: channel,
+        ts: stream_ts,
+        markdown_text: llmResponse.output_text,
+      });
+
+      await client.chat.stopStream({
+        channel: channel,
+        ts: stream_ts,
+      });
+
     } catch (e) {
       logger.error(e);
 
