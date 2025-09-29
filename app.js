@@ -1,6 +1,7 @@
 const { App, LogLevel, Assistant } = require('@slack/bolt');
 const { config } = require('dotenv');
-const { InferenceClient } = require('@huggingface/inference');
+const { OpenAI } = require('openai');
+// const { HfInference } = require('@huggingface/inference');
 
 config();
 
@@ -12,8 +13,13 @@ const app = new App({
   logLevel: LogLevel.DEBUG,
 });
 
-// HuggingFace configuration
-const hfClient = new InferenceClient(process.env.HUGGINGFACE_API_KEY);
+// OpenAI configuration
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+// Huggingface configuration
+// const hfClient = new HfInference(process.env.HUGGINGFACE_API_KEY);
 
 const DEFAULT_SYSTEM_CONTENT = `You're an assistant in a Slack workspace.
 Users in the workspace will ask you to help them write something or to think better about a specific topic.
@@ -184,20 +190,20 @@ const assistant = new Assistant({
           if (m.user) llmPrompt += `\n<@${m.user}> says: ${m.text}`;
         }
 
-        const messages = [
-          { role: 'system', content: DEFAULT_SYSTEM_CONTENT },
-          { role: 'user', content: llmPrompt },
-        ];
-
         // Send channel history and prepared request to LLM
-        const llmResponse = await hfClient.chatCompletion({
-          model: 'Qwen/QwQ-32B',
-          messages,
-          max_tokens: 2000,
+        const llmResponse = await openai.responses.create({
+          model: 'gpt-4o-mini',
+          input: `System: ${DEFAULT_SYSTEM_CONTENT}\n\nUser: ${llmPrompt}`,
         });
+        // Huggingface
+        // const llmResponse = await hfClient.chatCompletion({
+        //   model: 'Qwen/QwQ-32B',
+        //   messages,
+        //   max_tokens: 2000,
+        // });
 
         // Provide a response to the user
-        await say({ text: llmResponse.choices[0].message.content });
+        await say({ text: llmResponse.output_text });
 
         return;
       }
@@ -214,28 +220,34 @@ const assistant = new Assistant({
       });
 
       // Prepare and tag each message for LLM processing
-      const userMessage = { role: 'user', content: message.text };
       const threadHistory = thread.messages.map((m) => {
-        const role = m.bot_id ? 'assistant' : 'user';
-        return { role, content: m.text };
+        const role = m.bot_id ? 'Assistant' : 'User';
+        return `${role}: ${m.text || ''}`;
       });
+      // parsed threadHistory to align with openai.responses api input format
+      const parsedThreadHistory = threadHistory.join('\n');
 
-      const messages = [{ role: 'system', content: DEFAULT_SYSTEM_CONTENT }, ...threadHistory, userMessage];
+      const messages = `System: ${DEFAULT_SYSTEM_CONTENT}\n\n${parsedThreadHistory}\nUser: ${message.text}`;
 
       // Send message history and newest question to LLM
-      const llmResponse = await hfClient.chatCompletion({
-        model: 'Qwen/QwQ-32B',
-        messages,
-        max_tokens: 2000,
+      const llmResponse = await openai.responses.create({
+        model: 'gpt-4o-mini',
+        input: messages,
       });
+      // Huggingface
+      // const llmResponse = await hfClient.chatCompletion({
+      //   model: 'Qwen/QwQ-32B',
+      //   messages,
+      //   max_tokens: 2000,
+      // });
 
       // Provide a response to the user
-      await say({ text: llmResponse.choices[0].message.content });
+      await say({ text: llmResponse.output_text });
     } catch (e) {
       logger.error(e);
 
       // Send message to advise user and clear processing status if a failure occurs
-      await say({ text: 'Sorry, something went wrong!' });
+      await say({ text: `Sorry, something went wrong! ${e}` });
     }
   },
 });

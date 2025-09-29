@@ -4,7 +4,7 @@
   "description": "A template for building Slack app Assistants",
   "main": "app.js",
   "scripts": {
-    "check": "npx tsc --checkJs --noEmit --esModuleInterop app.js",
+    "check": "npx tsc --checkJs --noEmit --esModuleInterop --skipLibCheck app.js",
     "start": "node app.js",
     "lint": "npx @biomejs/biome check *.js",
     "lint:fix": "npx @biomejs/biome check --write *.js"
@@ -24,9 +24,9 @@
     "url": "https://github.com/slack-samples/bolt-js-assistant-template/issues"
   },
   "dependencies": {
-    "@huggingface/inference": "^4.7.1",
     "@slack/bolt": "^4.4.0",
-    "dotenv": "~17.2.1"
+    "dotenv": "~17.2.1",
+    "openai": "^4.104.0"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.2",
