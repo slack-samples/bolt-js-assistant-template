@@ -12,8 +12,8 @@ const app = new App({
   appToken: process.env.SLACK_APP_TOKEN,
   socketMode: true,
   logLevel: LogLevel.DEBUG,
-    clientOptions: {
-    slackApiUrl: process.env.SLACK_API_URL || "https://slack.com/api",
+  clientOptions: {
+    slackApiUrl: process.env.SLACK_API_URL || 'https://slack.com/api',
   },
 });
 
@@ -247,10 +247,10 @@ const assistant = new Assistant({
 
       const streamResponse = await client.chat.startStream({
         channel: channel,
-        thread_ts: thread_ts
+        thread_ts: thread_ts,
       });
 
-      const stream_ts = streamResponse["ts"]
+      const stream_ts = streamResponse.ts;
 
       await client.chat.appendStream({
         channel: channel,
@@ -262,7 +262,6 @@ const assistant = new Assistant({
         channel: channel,
         ts: stream_ts,
       });
-
     } catch (e) {
       logger.error(e);
 
