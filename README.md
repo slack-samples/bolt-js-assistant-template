@@ -43,7 +43,6 @@ SLACK_APP_TOKEN=YOUR_SLACK_APP_TOKEN
 OPENAI_API_KEY=YOUR_OPEN_API_KEY
 ```
 
-If using Hugging Face - A fine grained [access token](https://huggingface.co/settings/tokens) with the "Make calls to Inference Providers" permission from Hugging Face is needed. Store this as `HUGGINGFACE_API_KEY`.
 
 ### Local Project
 
