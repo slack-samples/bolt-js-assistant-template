@@ -25,9 +25,9 @@
   },
   "dependencies": {
     "dotenv": "~17.2.1",
-    "@slack/bolt": "^4.4.0-aiAppsBeta.3",
+    "@slack/bolt": "^4.4.0-aiAppsBeta.4",
     "@slack/types": "^2.16.0-aiAppsBeta.3",
-    "@slack/web-api": "^7.10.0-aiAppsBeta.3",
+    "@slack/web-api": "^7.10.0-aiAppsBeta.4",
     "openai": "^4.104.0"
   },
   "devDependencies": {
