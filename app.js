@@ -193,11 +193,23 @@ const assistant = new Assistant({
         const llmResponse = await openai.responses.create({
           model: 'gpt-4o-mini',
           input: `System: ${DEFAULT_SYSTEM_CONTENT}\n\nUser: ${llmPrompt}`,
+          stream: true,
         });
 
         // Provide a response to the user
-        await say({ text: llmResponse.output_text });
+        const streamer = client.chatStream({
+          channel: channel,
+          thread_ts: thread_ts,
+        });
 
+        for await (const chunk of llmResponse) {
+          if (chunk.type === 'response.output_text.delta') {
+            await streamer.append({
+              markdown_text: chunk.delta,
+            });
+          }
+        }
+        await streamer.stop();
         return;
       }
 
@@ -226,6 +238,7 @@ const assistant = new Assistant({
       const llmResponse = await openai.responses.create({
         model: 'gpt-4o-mini',
         input: messages,
+        stream: true,
       });
 
       const streamer = client.chatStream({
@@ -233,10 +246,13 @@ const assistant = new Assistant({
         thread_ts: thread_ts,
       });
 
-      await streamer.append({
-        markdown_text: llmResponse.output_text,
-      });
-
+      for await (const chunk of llmResponse) {
+        if (chunk.type === 'response.output_text.delta') {
+          await streamer.append({
+            markdown_text: chunk.delta,
+          });
+        }
+      }
       await streamer.stop();
     } catch (e) {
       logger.error(e);
