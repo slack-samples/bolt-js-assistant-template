@@ -25,7 +25,6 @@
   },
   "dependencies": {
     "dotenv": "~17.2.1",
-    "@huggingface/inference": "^4.7.1",
     "@slack/bolt": "^4.4.0-aiAppsBeta.3",
     "@slack/types": "^2.16.0-aiAppsBeta.3",
     "@slack/web-api": "^7.10.0-aiAppsBeta.3",
@@ -33,7 +32,6 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.2",
-    "@slack/cli-hooks": "^1.2.1",
     "@types/node": "^24.3.0",
     "typescript": "^5.9.2"
   }

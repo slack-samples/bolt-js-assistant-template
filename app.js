@@ -1,8 +1,6 @@
 const { App, LogLevel, Assistant } = require('@slack/bolt');
-
 const { config } = require('dotenv');
 const { OpenAI } = require('openai');
-// const { HfInference } = require('@huggingface/inference');
 
 config();
 
@@ -21,9 +19,6 @@ const app = new App({
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-
-// Huggingface configuration
-// const hfClient = new HfInference(process.env.HUGGINGFACE_API_KEY);
 
 const DEFAULT_SYSTEM_CONTENT = `You're an assistant in a Slack workspace.
 Users in the workspace will ask you to help them write something or to think better about a specific topic.
@@ -199,12 +194,6 @@ const assistant = new Assistant({
           model: 'gpt-4o-mini',
           input: `System: ${DEFAULT_SYSTEM_CONTENT}\n\nUser: ${llmPrompt}`,
         });
-        // Huggingface
-        // const llmResponse = await hfClient.chatCompletion({
-        //   model: 'Qwen/QwQ-32B',
-        //   messages,
-        //   max_tokens: 2000,
-        // });
 
         // Provide a response to the user
         await say({ text: llmResponse.output_text });
@@ -238,30 +227,17 @@ const assistant = new Assistant({
         model: 'gpt-4o-mini',
         input: messages,
       });
-      // // Huggingface
-      // // const llmResponse = await hfClient.chatCompletion({
-      // //   model: 'Qwen/QwQ-32B',
-      // //   messages,
-      // //   max_tokens: 2000,
-      // // });
 
-      const streamResponse = await client.chat.startStream({
+      const streamer = client.chatStream({
         channel: channel,
         thread_ts: thread_ts,
       });
 
-      const stream_ts = streamResponse.ts;
-
-      await client.chat.appendStream({
-        channel: channel,
-        ts: stream_ts,
+      await streamer.append({
         markdown_text: llmResponse.output_text,
       });
 
-      await client.chat.stopStream({
-        channel: channel,
-        ts: stream_ts,
-      });
+      await streamer.stop();
     } catch (e) {
       logger.error(e);
 
