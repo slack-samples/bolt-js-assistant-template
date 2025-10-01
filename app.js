@@ -209,7 +209,16 @@ const assistant = new Assistant({
        *
        * @see {@link https://docs.slack.dev/reference/methods/assistant.threads.setStatus}
        */
-      await setStatus('is typing..');
+      await setStatus({
+        status: 'thinking...',
+        loading_messages: [
+          'Teaching the hamsters to type faster…',
+          'Untangling the internet cables…',
+          'Consulting the office goldfish…',
+          'Polishing up the response just for you…',
+          'Convincing the AI to stop overthinking…',
+        ],
+      });
 
       /** Scenario 1: Handle suggested prompt selection
        * The example below uses a prompt that relies on the context (channel) in which
