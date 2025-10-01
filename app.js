@@ -126,7 +126,7 @@ const assistant = new Assistant({
    *
    * @see {@link https://docs.slack.dev/reference/events/message}
    */
-  userMessage: async ({ client, logger, message, getThreadContext, say, setTitle, setStatus }) => {
+  userMessage: async ({ client, context, logger, message, getThreadContext, say, setTitle, setStatus }) => {
     /**
      * Messages sent to the Assistant can have a specific message subtype.
      *
@@ -139,6 +139,7 @@ const assistant = new Assistant({
       return;
     }
     const { channel, thread_ts } = message;
+    const { userId, teamId } = context;
 
     try {
       /**
@@ -250,6 +251,8 @@ const assistant = new Assistant({
 
       const streamer = client.chatStream({
         channel: channel,
+        recipient_team_id: teamId,
+        recipient_user_id: userId,
         thread_ts: thread_ts,
       });
 
