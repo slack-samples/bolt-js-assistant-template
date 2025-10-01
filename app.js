@@ -26,6 +26,61 @@ You'll respond to those questions in a professional way.
 When you include markdown text, convert them to Slack compatible ones.
 When a prompt has Slack's special syntax like <@USER_ID> or <#CHANNEL_ID>, you must keep them as-is in your response.`;
 
+function createFeedbackBlock() {
+  const elements = [
+    {
+      type: 'feedback_buttons',
+      action_id: 'feedback',
+      positive_button: {
+        text: { type: 'plain_text', text: 'Good Response' },
+        accessibility_label: 'Submit positive feedback on this response',
+        value: 'good-feedback',
+      },
+      negative_button: {
+        text: { type: 'plain_text', text: 'Bad Response' },
+        accessibility_label: 'Submit negative feedback on this response',
+        value: 'bad-feedback',
+      },
+    },
+  ];
+  return {
+    type: 'context_actions',
+    elements: elements,
+  };
+}
+app.action('feedback', async ({ ack, body, client, logger }) => {
+  try {
+    await ack();
+    if (body.type !== 'block_actions') {
+      return;
+    }
+    const message_ts = body.message.ts;
+    const channel_id = body.channel.id;
+    const user_id = body.user.id;
+    const feedback_type = body.actions[0];
+    if (!('value' in feedback_type)) {
+      return;
+    }
+    const is_positive = feedback_type.value === 'good-feedback';
+    if (is_positive) {
+      await client.chat.postEphemeral({
+        channel: channel_id,
+        user: user_id,
+        thread_ts: message_ts,
+        text: "We're glad you found this useful.",
+      });
+    } else {
+      await client.chat.postEphemeral({
+        channel: channel_id,
+        user: user_id,
+        thread_ts: message_ts,
+        text: "Sorry to hear that response wasn't up to par :slightly_frowning_face: Starting a new chat may help with AI mistakes and hallucinations.",
+      });
+    }
+  } catch (error) {
+    logger.error(`:warning: Something went wrong! ${error}`);
+  }
+});
 const assistant = new Assistant({
   /**
    * (Recommended) A custom ThreadContextStore can be provided, inclusive of methods to
@@ -209,7 +264,7 @@ const assistant = new Assistant({
             });
           }
         }
-        await streamer.stop();
+        await streamer.stop({ blocks: [createFeedbackBlock()] });
         return;
       }
 
@@ -240,7 +295,6 @@ const assistant = new Assistant({
         input: messages,
         stream: true,
       });
-
       const streamer = client.chatStream({
         channel: channel,
         thread_ts: thread_ts,
@@ -253,7 +307,8 @@ const assistant = new Assistant({
           });
         }
       }
-      await streamer.stop();
+      await streamer.stop({ blocks: [createFeedbackBlock()] });
+      return;
     } catch (e) {
       logger.error(e);
 
