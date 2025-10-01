@@ -48,19 +48,30 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+/**
+ * `feedback` action responds to the `feedbackBlock` that displays positive
+ * and negative feedback icons. This block is attached to the bottom of
+ * LLM responses using the `chatStream` method.
+ *
+ * @see {@link https://docs.slack.dev/reference/events/app_mention/}
+ */
 app.action('feedback', async ({ ack, body, client, logger }) => {
   try {
     await ack();
+
     if (body.type !== 'block_actions') {
       return;
     }
+
     const message_ts = body.message.ts;
     const channel_id = body.channel.id;
     const user_id = body.user.id;
+
     const feedback_type = body.actions[0];
     if (!('value' in feedback_type)) {
       return;
     }
+
     const is_positive = feedback_type.value === 'good-feedback';
     if (is_positive) {
       await client.chat.postEphemeral({
