@@ -1,7 +1,6 @@
 const { App, LogLevel, Assistant } = require('@slack/bolt');
 const { config } = require('dotenv');
 const { OpenAI } = require('openai');
-// const { HfInference } = require('@huggingface/inference');
 
 config();
 
@@ -11,15 +10,15 @@ const app = new App({
   appToken: process.env.SLACK_APP_TOKEN,
   socketMode: true,
   logLevel: LogLevel.DEBUG,
+  clientOptions: {
+    slackApiUrl: process.env.SLACK_API_URL || 'https://slack.com/api',
+  },
 });
 
 // OpenAI configuration
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-
-// Huggingface configuration
-// const hfClient = new HfInference(process.env.HUGGINGFACE_API_KEY);
 
 const DEFAULT_SYSTEM_CONTENT = `You're an assistant in a Slack workspace.
 Users in the workspace will ask you to help them write something or to think better about a specific topic.
@@ -194,17 +193,23 @@ const assistant = new Assistant({
         const llmResponse = await openai.responses.create({
           model: 'gpt-4o-mini',
           input: `System: ${DEFAULT_SYSTEM_CONTENT}\n\nUser: ${llmPrompt}`,
+          stream: true,
         });
-        // Huggingface
-        // const llmResponse = await hfClient.chatCompletion({
-        //   model: 'Qwen/QwQ-32B',
-        //   messages,
-        //   max_tokens: 2000,
-        // });
 
         // Provide a response to the user
-        await say({ text: llmResponse.output_text });
+        const streamer = client.chatStream({
+          channel: channel,
+          thread_ts: thread_ts,
+        });
 
+        for await (const chunk of llmResponse) {
+          if (chunk.type === 'response.output_text.delta') {
+            await streamer.append({
+              markdown_text: chunk.delta,
+            });
+          }
+        }
+        await streamer.stop();
         return;
       }
 
@@ -233,16 +238,22 @@ const assistant = new Assistant({
       const llmResponse = await openai.responses.create({
         model: 'gpt-4o-mini',
         input: messages,
+        stream: true,
       });
-      // Huggingface
-      // const llmResponse = await hfClient.chatCompletion({
-      //   model: 'Qwen/QwQ-32B',
-      //   messages,
-      //   max_tokens: 2000,
-      // });
 
-      // Provide a response to the user
-      await say({ text: llmResponse.output_text });
+      const streamer = client.chatStream({
+        channel: channel,
+        thread_ts: thread_ts,
+      });
+
+      for await (const chunk of llmResponse) {
+        if (chunk.type === 'response.output_text.delta') {
+          await streamer.append({
+            markdown_text: chunk.delta,
+          });
+        }
+      }
+      await streamer.stop();
     } catch (e) {
       logger.error(e);
 
