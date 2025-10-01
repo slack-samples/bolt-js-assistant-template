@@ -24,8 +24,8 @@
     "url": "https://github.com/slack-samples/bolt-js-assistant-template/issues"
   },
   "dependencies": {
-    "dotenv": "~17.2.1",
     "@slack/bolt": "4.4.0-aiAppsBeta.4",
+    "dotenv": "~17.2.1",
     "openai": "^4.104.0"
   },
   "devDependencies": {
