@@ -52,8 +52,6 @@ const openai = new OpenAI({
  * `feedback` action responds to the `feedbackBlock` that displays positive
  * and negative feedback icons. This block is attached to the bottom of
  * LLM responses using the `chatStream` method.
- *
- * @see {@link https://docs.slack.dev/reference/events/app_mention/}
  */
 app.action('feedback', async ({ ack, body, client, logger }) => {
   try {
