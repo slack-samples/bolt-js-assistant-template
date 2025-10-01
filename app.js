@@ -4,30 +4,17 @@ const { OpenAI } = require('openai');
 
 config();
 
-/** Initialization */
-const app = new App({
-  token: process.env.SLACK_BOT_TOKEN,
-  appToken: process.env.SLACK_APP_TOKEN,
-  socketMode: true,
-  logLevel: LogLevel.DEBUG,
-  clientOptions: {
-    slackApiUrl: process.env.SLACK_API_URL || 'https://slack.com/api',
-  },
-});
-
-// OpenAI configuration
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
+// LLM system prompt
 const DEFAULT_SYSTEM_CONTENT = `You're an assistant in a Slack workspace.
 Users in the workspace will ask you to help them write something or to think better about a specific topic.
 You'll respond to those questions in a professional way.
 When you include markdown text, convert them to Slack compatible ones.
 When a prompt has Slack's special syntax like <@USER_ID> or <#CHANNEL_ID>, you must keep them as-is in your response.`;
 
-function createFeedbackBlock() {
-  const elements = [
+// Feedback buttons block
+const feedbackBlock = {
+  type: 'context_actions',
+  elements: [
     {
       type: 'feedback_buttons',
       action_id: 'feedback',
@@ -42,12 +29,25 @@ function createFeedbackBlock() {
         value: 'bad-feedback',
       },
     },
-  ];
-  return {
-    type: 'context_actions',
-    elements: elements,
-  };
-}
+  ],
+};
+
+// Initialize the Bolt app
+const app = new App({
+  token: process.env.SLACK_BOT_TOKEN,
+  appToken: process.env.SLACK_APP_TOKEN,
+  socketMode: true,
+  logLevel: LogLevel.DEBUG,
+  clientOptions: {
+    slackApiUrl: process.env.SLACK_API_URL || 'https://slack.com/api',
+  },
+});
+
+// Initialize the OpenAI LLM
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
 app.action('feedback', async ({ ack, body, client, logger }) => {
   try {
     await ack();
@@ -81,6 +81,7 @@ app.action('feedback', async ({ ack, body, client, logger }) => {
     logger.error(`:warning: Something went wrong! ${error}`);
   }
 });
+
 const assistant = new Assistant({
   /**
    * (Recommended) A custom ThreadContextStore can be provided, inclusive of methods to
@@ -273,7 +274,7 @@ const assistant = new Assistant({
             });
           }
         }
-        await streamer.stop({ blocks: [createFeedbackBlock()] });
+        await streamer.stop({ blocks: [feedbackBlock] });
         return;
       }
 
@@ -316,7 +317,7 @@ const assistant = new Assistant({
           });
         }
       }
-      await streamer.stop({ blocks: [createFeedbackBlock()] });
+      await streamer.stop({ blocks: [feedbackBlock] });
       return;
     } catch (e) {
       logger.error(e);
