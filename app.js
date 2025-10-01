@@ -209,6 +209,8 @@ const assistant = new Assistant({
         // Provide a response to the user
         const streamer = client.chatStream({
           channel: channel,
+          recipient_team_id: teamId,
+          recipient_user_id: userId,
           thread_ts: thread_ts,
         });
 
