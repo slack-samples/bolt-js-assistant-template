@@ -318,7 +318,6 @@ const assistant = new Assistant({
         }
       }
       await streamer.stop({ blocks: [feedbackBlock] });
-      return;
     } catch (e) {
       logger.error(e);
 
