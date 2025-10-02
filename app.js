@@ -51,7 +51,7 @@ const openai = new OpenAI({
 /**
  * `feedback` action responds to the `feedbackBlock` that displays positive
  * and negative feedback icons. This block is attached to the bottom of
- * LLM responses using the `chatStream` method.
+ * LLM responses using the `WebClient#chatStream.stop()` method.
  */
 app.action('feedback', async ({ ack, body, client, logger }) => {
   try {
