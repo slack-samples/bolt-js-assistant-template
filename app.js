@@ -11,7 +11,11 @@ You'll respond to those questions in a professional way.
 When you include markdown text, convert them to Slack compatible ones.
 When a prompt has Slack's special syntax like <@USER_ID> or <#CHANNEL_ID>, you must keep them as-is in your response.`;
 
-// Feedback buttons block
+/**
+ * Feedback buttons to include with messages.
+ *
+ * @type {import("@slack/bolt").types.ContextActionsBlock}
+ */
 const feedbackBlock = {
   type: 'context_actions',
   elements: [
