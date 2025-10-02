@@ -1,4 +1,4 @@
-const { openai, DEFAULT_SYSTEM_CONTENT } = require("../../app.js");
+const { openai, DEFAULT_SYSTEM_CONTENT } = require('../../app.js');
 
 /**
  * `app_mention` event allows your app to receive message events that directly
