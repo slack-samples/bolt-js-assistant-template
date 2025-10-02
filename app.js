@@ -4,7 +4,39 @@ const { OpenAI } = require('openai');
 
 config();
 
-/** Initialization */
+// LLM system prompt
+const DEFAULT_SYSTEM_CONTENT = `You're an assistant in a Slack workspace.
+Users in the workspace will ask you to help them write something or to think better about a specific topic.
+You'll respond to those questions in a professional way.
+When you include markdown text, convert them to Slack compatible ones.
+When a prompt has Slack's special syntax like <@USER_ID> or <#CHANNEL_ID>, you must keep them as-is in your response.`;
+
+/**
+ * Feedback buttons to include with messages.
+ *
+ * @type {import("@slack/bolt").types.ContextActionsBlock}
+ */
+const feedbackBlock = {
+  type: 'context_actions',
+  elements: [
+    {
+      type: 'feedback_buttons',
+      action_id: 'feedback',
+      positive_button: {
+        text: { type: 'plain_text', text: 'Good Response' },
+        accessibility_label: 'Submit positive feedback on this response',
+        value: 'good-feedback',
+      },
+      negative_button: {
+        text: { type: 'plain_text', text: 'Bad Response' },
+        accessibility_label: 'Submit negative feedback on this response',
+        value: 'bad-feedback',
+      },
+    },
+  ],
+};
+
+// Initialize the Bolt app
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
   appToken: process.env.SLACK_APP_TOKEN,
@@ -15,16 +47,53 @@ const app = new App({
   },
 });
 
-// OpenAI configuration
+// Initialize the OpenAI LLM
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const DEFAULT_SYSTEM_CONTENT = `You're an assistant in a Slack workspace.
-Users in the workspace will ask you to help them write something or to think better about a specific topic.
-You'll respond to those questions in a professional way.
-When you include markdown text, convert them to Slack compatible ones.
-When a prompt has Slack's special syntax like <@USER_ID> or <#CHANNEL_ID>, you must keep them as-is in your response.`;
+/**
+ * `feedback` action responds to the `feedbackBlock` that displays positive
+ * and negative feedback icons. This block is attached to the bottom of
+ * LLM responses using the `WebClient#chatStream.stop()` method.
+ */
+app.action('feedback', async ({ ack, body, client, logger }) => {
+  try {
+    await ack();
+
+    if (body.type !== 'block_actions') {
+      return;
+    }
+
+    const message_ts = body.message.ts;
+    const channel_id = body.channel.id;
+    const user_id = body.user.id;
+
+    const feedback_type = body.actions[0];
+    if (!('value' in feedback_type)) {
+      return;
+    }
+
+    const is_positive = feedback_type.value === 'good-feedback';
+    if (is_positive) {
+      await client.chat.postEphemeral({
+        channel: channel_id,
+        user: user_id,
+        thread_ts: message_ts,
+        text: "We're glad you found this useful.",
+      });
+    } else {
+      await client.chat.postEphemeral({
+        channel: channel_id,
+        user: user_id,
+        thread_ts: message_ts,
+        text: "Sorry to hear that response wasn't up to par :slightly_frowning_face: Starting a new chat may help with AI mistakes and hallucinations.",
+      });
+    }
+  } catch (error) {
+    logger.error(`:warning: Something went wrong! ${error}`);
+  }
+});
 
 const assistant = new Assistant({
   /**
@@ -218,7 +287,7 @@ const assistant = new Assistant({
             });
           }
         }
-        await streamer.stop();
+        await streamer.stop({ blocks: [feedbackBlock] });
         return;
       }
 
@@ -249,7 +318,6 @@ const assistant = new Assistant({
         input: messages,
         stream: true,
       });
-
       const streamer = client.chatStream({
         channel: channel,
         thread_ts: thread_ts,
@@ -262,7 +330,7 @@ const assistant = new Assistant({
           });
         }
       }
-      await streamer.stop();
+      await streamer.stop({ blocks: [feedbackBlock] });
     } catch (e) {
       logger.error(e);
 
