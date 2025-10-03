@@ -1,5 +1,5 @@
 /**
- * Feedback buttons to include with messages.
+ * `feedbackBlock` are feedback buttons included with messages.
  *
  * @type {import("@slack/bolt").types.ContextActionsBlock}
  */
