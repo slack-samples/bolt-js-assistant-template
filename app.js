@@ -116,7 +116,7 @@ app.event('app_mention', async ({ event, client, logger, say }) => {
  * and negative feedback icons. This block is attached to the bottom of
  * LLM responses using the `WebClient#chatStream.stop()` method.
  */
-app.action({ type: "block_actions", action_id: "feedback" }, async ({ ack, body, client, logger }) => {
+app.action({ type: 'block_actions', action_id: 'feedback' }, async ({ ack, body, client, logger }) => {
   try {
     await ack();
 
