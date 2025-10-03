@@ -5,10 +5,10 @@
   "type": "module",
   "main": "app.js",
   "scripts": {
-    "check": "npx tsc --checkJs --noEmit --esModuleInterop --target esnext --module nodenext --moduleResolution nodenext *.js listeners/**/*",
+    "check": "npx tsc --checkJs --noEmit --esModuleInterop --target esnext --module nodenext --moduleResolution nodenext app.js",
     "start": "node app.js",
-    "lint": "npx @biomejs/biome check *.js listeners",
-    "lint:fix": "npx @biomejs/biome check --write *.js listeners"
+    "lint": "npx @biomejs/biome check *.js ai/ listeners/",
+    "lint:fix": "npx @biomejs/biome check --write *.js ai/ listeners/"
   },
   "author": "Slack Technologies, LLC",
   "license": "MIT",

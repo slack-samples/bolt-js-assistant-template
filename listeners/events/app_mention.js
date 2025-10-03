@@ -1,4 +1,5 @@
 import { DEFAULT_SYSTEM_CONTENT, openai } from '../../ai/index.js';
+import { feedbackBlock } from '../views/feedback_block.js';
 
 /**
  * `appMentionCallback` event handler allows your app to receive message events
@@ -50,7 +51,7 @@ export const appMentionCallback = async ({ event, client, logger, say }) => {
       }
     }
 
-    await streamer.stop();
+    await streamer.stop({ blocks: [feedbackBlock] });
   } catch (e) {
     logger.error(e);
 
