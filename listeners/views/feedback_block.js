@@ -3,7 +3,7 @@
  *
  * @type {import("@slack/bolt").types.ContextActionsBlock}
  */
-const feedbackBlock = {
+export const feedbackBlock = {
   type: 'context_actions',
   elements: [
     {
@@ -22,4 +22,3 @@ const feedbackBlock = {
     },
   ],
 };
-export { feedbackBlock };

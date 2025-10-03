@@ -1,5 +1,5 @@
-const { handle_feedback } = require('./feedback.js');
+import { feedbackActionCallback } from './feedback.js';
 
 export const register = (app) => {
-  app.action('feedback', handle_feedback);
+  app.action('feedback', feedbackActionCallback);
 };

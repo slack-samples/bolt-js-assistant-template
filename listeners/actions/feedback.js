@@ -1,9 +1,9 @@
 /**
- * `feedback` action responds to the `feedbackBlock` that displays positive
+ * `feedbackActionCallback` action responds to the `feedbackBlock` that displays positive
  * and negative feedback icons. This block is attached to the bottom of
  * LLM responses using the `WebClient#chatStream.stop()` method.
  */
-const handle_feedback = async ({ ack, body, client, logger }) => {
+export const feedbackActionCallback = async ({ ack, body, client, logger }) => {
   try {
     await ack();
 
@@ -40,4 +40,3 @@ const handle_feedback = async ({ ack, body, client, logger }) => {
     logger.error(`:warning: Something went wrong! ${error}`);
   }
 };
-export { handle_feedback };

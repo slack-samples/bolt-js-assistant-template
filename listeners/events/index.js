@@ -1,5 +1,5 @@
-const { handleAppMention } = require('./app_mentioned.js');
+import { appMentionCallback } from './app_mention.js';
 
 export const register = (app) => {
-  app.event('app_mention', handleAppMention);
+  app.event('app_mention', appMentionCallback);
 };

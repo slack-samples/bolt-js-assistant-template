@@ -1,14 +1,14 @@
-const { openai, DEFAULT_SYSTEM_CONTENT } = require('../../app.js');
+import { DEFAULT_SYSTEM_CONTENT, openai } from '../../ai/index.js';
 
 /**
- * `app_mention` event allows your app to receive message events that directly
- * mention your app. The app must be a member of the channel/conversation to
- * receive the event. Messages in a DM with your app will not dispatch this event,
- * event if the message mentions your app.
+ * `appMentionCallback` event handler allows your app to receive message events
+ * that directly mention your app. The app must be a member of the
+ * channel/conversation to receive the event. Messages in a DM with your app
+ * will not dispatch this event, event if the message mentions your app.
  *
  * @see {@link https://docs.slack.dev/reference/events/app_mention/}
  */
-const handleAppMention = async ({ event, client, logger, say }) => {
+export const appMentionCallback = async ({ event, client, logger, say }) => {
   try {
     const { channel, text, team, user } = event;
     const thread_ts = event.thread_ts || event.ts;
@@ -58,4 +58,3 @@ const handleAppMention = async ({ event, client, logger, say }) => {
     await say({ text: `Sorry, something went wrong! ${e}` });
   }
 };
-export { handleAppMention };

@@ -2,6 +2,7 @@
   "name": "bolt-js-assistant-template",
   "version": "1.0.0",
   "description": "A template for building Slack app Assistants",
+  "type": "module",
   "main": "app.js",
   "scripts": {
     "check": "npx tsc --checkJs --noEmit --esModuleInterop --target esnext --module nodenext --moduleResolution nodenext *.js listeners/**/*",

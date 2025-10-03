@@ -1,7 +1,12 @@
-const { threadStarted, threadContextChanged, userMessage } = require('./assistant.js');
+import { Assistant } from '@slack/bolt';
+import { threadContextChanged, threadStarted, userMessage } from './assistant.js';
 
 export const register = (app) => {
-  app.Assistant(threadStarted);
-  app.Assistant(threadContextChanged);
-  app.Assistant(userMessage);
+  const assistant = new Assistant({
+    threadStarted: threadStarted,
+    threadContextChanged: threadContextChanged,
+    userMessage: userMessage,
+  });
+
+  app.assistant(assistant);
 };

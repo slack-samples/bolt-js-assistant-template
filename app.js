@@ -1,20 +1,9 @@
-const { App, LogLevel } = require('@slack/bolt');
-const { config } = require('dotenv');
-const { registerListeners } = require('./listeners/index.js');
-const { OpenAI } = require('openai');
+import { App, LogLevel } from '@slack/bolt';
+import { config } from 'dotenv';
+import { registerListeners } from './listeners/index.js';
 
+// Load environment variables
 config();
-
-// LLM system prompt
-const DEFAULT_SYSTEM_CONTENT = `You're an assistant in a Slack workspace.
-Users in the workspace will ask you to help them write something or to think better about a specific topic.
-You'll respond to those questions in a professional way.
-When you include markdown text, convert them to Slack compatible ones.
-When a prompt has Slack's special syntax like <@USER_ID> or <#CHANNEL_ID>, you must keep them as-is in your response.`;
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 // Initialize the Bolt app
 const app = new App({
@@ -27,11 +16,10 @@ const app = new App({
   },
 });
 
-module.exports = { openai, DEFAULT_SYSTEM_CONTENT };
-
+// Register the action and event listeners
 registerListeners(app);
 
-/** Start the Bolt App */
+// Start the Bolt app
 (async () => {
   try {
     await app.start();

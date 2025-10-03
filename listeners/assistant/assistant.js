@@ -1,5 +1,5 @@
-const { feedbackBlock } = require('../views/feedback_block.js');
-const { openai, DEFAULT_SYSTEM_CONTENT } = require('../../app.js');
+import { DEFAULT_SYSTEM_CONTENT, openai } from '../../ai/index.js';
+import { feedbackBlock } from '../views/feedback_block.js';
 
 /**
  * `assistant_thread_started` is sent when a user opens the Assistant container.
@@ -7,7 +7,7 @@ const { openai, DEFAULT_SYSTEM_CONTENT } = require('../../app.js');
  *
  * @see {@link https://docs.slack.dev/reference/events/assistant_thread_started}
  */
-const threadStarted = async ({ event, logger, say, setSuggestedPrompts, saveThreadContext }) => {
+export const threadStarted = async ({ event, logger, say, setSuggestedPrompts, saveThreadContext }) => {
   const { context } = event.assistant_thread;
 
   try {
@@ -76,7 +76,7 @@ const threadStarted = async ({ event, logger, say, setSuggestedPrompts, saveThre
  *
  * @see {@link https://docs.slack.dev/reference/events/assistant_thread_context_changed}
  */
-const threadContextChanged = async ({ logger, saveThreadContext }) => {
+export const threadContextChanged = async ({ logger, saveThreadContext }) => {
   // const { channel_id, thread_ts, context: assistantContext } = event.assistant_thread;
   try {
     await saveThreadContext();
@@ -90,7 +90,7 @@ const threadContextChanged = async ({ logger, saveThreadContext }) => {
  *
  * @see {@link https://docs.slack.dev/reference/events/message}
  */
-const userMessage = async ({ client, context, logger, message, getThreadContext, say, setTitle, setStatus }) => {
+export const userMessage = async ({ client, context, logger, message, getThreadContext, say, setTitle, setStatus }) => {
   /**
    * Messages sent to the Assistant can have a specific message subtype.
    *
@@ -236,4 +236,3 @@ const userMessage = async ({ client, context, logger, message, getThreadContext,
     await say({ text: `Sorry, something went wrong! ${e}` });
   }
 };
-export { threadStarted, threadContextChanged, userMessage };
