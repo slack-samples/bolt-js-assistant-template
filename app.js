@@ -116,25 +116,20 @@ app.event('app_mention', async ({ event, client, logger, say }) => {
  * and negative feedback icons. This block is attached to the bottom of
  * LLM responses using the `WebClient#chatStream.stop()` method.
  */
-app.action('feedback', async ({ ack, body, client, logger }) => {
+app.action({ type: "block_actions", action_id: "feedback" }, async ({ ack, body, client, logger }) => {
   try {
     await ack();
 
-    if (body.type !== 'block_actions') {
+    if (body.actions[0].type !== 'feedback_buttons') {
       return;
     }
 
     const message_ts = body.message.ts;
     const channel_id = body.channel.id;
     const user_id = body.user.id;
+    const value = body.actions[0].value;
 
-    const feedback_type = body.actions[0];
-    if (!('value' in feedback_type)) {
-      return;
-    }
-
-    const is_positive = feedback_type.value === 'good-feedback';
-    if (is_positive) {
+    if (value === 'good-feedback') {
       await client.chat.postEphemeral({
         channel: channel_id,
         user: user_id,
