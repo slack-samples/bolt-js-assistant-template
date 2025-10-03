@@ -1,7 +1,8 @@
 {
-  "name": "bolt-js-assistant-template",
+  "name": "bolt-js-agent-template",
   "version": "1.0.0",
-  "description": "A template for building Slack app Assistants",
+  "description": "A template for building Slack app Agents",
+  "type": "module",
   "main": "app.js",
   "scripts": {
     "check": "npx tsc --checkJs --noEmit --esModuleInterop --target esnext --module nodenext --moduleResolution nodenext app.js",
