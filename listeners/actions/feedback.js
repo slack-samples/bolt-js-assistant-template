@@ -13,21 +13,16 @@ export const feedbackActionCallback = async ({ ack, body, client, logger }) => {
   try {
     await ack();
 
-    if (body.type !== 'block_actions') {
+    if (body.type !== 'block_actions' || body.actions[0].type !== 'feedback_buttons') {
       return;
     }
 
     const message_ts = body.message.ts;
     const channel_id = body.channel.id;
     const user_id = body.user.id;
+    const value = body.actions[0].value;
 
-    const feedback_type = body.actions[0];
-    if (!('value' in feedback_type)) {
-      return;
-    }
-
-    const is_positive = feedback_type.value === 'good-feedback';
-    if (is_positive) {
+    if (value === 'good-feedback') {
       await client.chat.postEphemeral({
         channel: channel_id,
         user: user_id,
