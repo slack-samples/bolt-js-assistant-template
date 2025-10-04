@@ -2,10 +2,16 @@ import { DEFAULT_SYSTEM_CONTENT, openai } from '../../ai/index.js';
 import { feedbackBlock } from '../views/feedback_block.js';
 
 /**
- * `appMentionCallback` event handler allows your app to receive message events
- * that directly mention your app. The app must be a member of the
+ * The `appMentionCallback` event handler allows your app to receive message
+ * events that directly mention your app. The app must be a member of the
  * channel/conversation to receive the event. Messages in a DM with your app
  * will not dispatch this event, event if the message mentions your app.
+ *
+ * @param {Object} params
+ * @param {import("@slack/types").AppMentionEvent} params.event - The app mention event.
+ * @param {import("@slack/web-api").WebClient} params.client - Slack web client.
+ * @param {import("@slack/logger").Logger} params.logger - Logger instance.
+ * @param {import("@slack/bolt").SayFn} params.say - Function to send messages.
  *
  * @see {@link https://docs.slack.dev/reference/events/app_mention/}
  */

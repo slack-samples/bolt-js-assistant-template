@@ -1,6 +1,13 @@
 /**
- * `assistant_thread_started` is sent when a user opens the Assistant container.
+ * The `assistant_thread_started` event is sent when a user opens the Assistant container.
  * This can happen via DM with the app or as a side-container within a channel.
+ *
+ * @param {Object} params
+ * @param {import("@slack/types").AssistantThreadStartedEvent} params.event - The assistant thread started event.
+ * @param {import("@slack/logger").Logger} params.logger - Logger instance.
+ * @param {import("@slack/bolt").SayFn} params.say - Function to send messages.
+ * @param {Function} params.setSuggestedPrompts - Function to set suggested prompts.
+ * @param {Function} params.saveThreadContext - Function to save thread context.
  *
  * @see {@link https://docs.slack.dev/reference/events/assistant_thread_started}
  */

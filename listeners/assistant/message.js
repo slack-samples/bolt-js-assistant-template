@@ -2,7 +2,17 @@ import { DEFAULT_SYSTEM_CONTENT, openai } from '../../ai/index.js';
 import { feedbackBlock } from '../views/feedback_block.js';
 
 /**
- * `message` event is sent when the user direct messages the app in a DM or Assistant container.
+ * The `message` event is sent when the user direct messages the app in a DM or Assistant container.
+ *
+ * @param {Object} params
+ * @param {import("@slack/web-api").WebClient} params.client - Slack web client.
+ * @param {import("@slack/bolt").Context} params.context - Event context.
+ * @param {import("@slack/logger").Logger} params.logger - Logger instance.
+ * @param {import("@slack/types").MessageEvent} params.message - The incoming message.
+ * @param {Function} params.getThreadContext - Function to get thread context.
+ * @param {import("@slack/bolt").SayFn} params.say - Function to send messages.
+ * @param {Function} params.setTitle - Function to set assistant thread title.
+ * @param {Function} params.setStatus - Function to set assistant status.
  *
  * @see {@link https://docs.slack.dev/reference/events/message}
  */

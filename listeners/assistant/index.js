@@ -3,6 +3,9 @@ import { assistantThreadContextChanged } from './assistant_thread_context_change
 import { assistantThreadStarted } from './assistant_thread_started.js';
 import { message } from './message.js';
 
+/**
+ * @param {import("@slack/bolt").App} app
+ */
 export const register = (app) => {
   const assistant = new Assistant({
     threadStarted: assistantThreadStarted,

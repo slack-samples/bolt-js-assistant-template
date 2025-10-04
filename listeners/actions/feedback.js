@@ -1,7 +1,13 @@
 /**
- * `feedbackActionCallback` action responds to the `feedbackBlock` that displays positive
- * and negative feedback icons. This block is attached to the bottom of
- * LLM responses using the `WebClient#chatStream.stop()` method.
+ * The `feedbackActionCallback` action responds to the `feedbackBlock` that displays
+ * positive and negative feedback icons. This block is attached to the bottom of LLM
+ * responses using the `WebClient#chatStream.stop()` method.
+ *
+ * @param {Object} params
+ * @param {import("@slack/bolt").AckFn<any>} params.ack - Acknowledgement function.
+ * @param {import("@slack/bolt").SlackAction} params.body - Action payload.
+ * @param {import("@slack/web-api").WebClient} params.client - Slack web client.
+ * @param {import("@slack/logger").Logger} params.logger - Logger instance.
  */
 export const feedbackActionCallback = async ({ ack, body, client, logger }) => {
   try {
