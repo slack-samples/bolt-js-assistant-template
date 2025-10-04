@@ -2,12 +2,13 @@
   "name": "bolt-js-assistant-template",
   "version": "1.0.0",
   "description": "A template for building Slack app Assistants",
+  "type": "module",
   "main": "app.js",
   "scripts": {
     "check": "npx tsc --checkJs --noEmit --esModuleInterop --target esnext --module nodenext --moduleResolution nodenext app.js",
     "start": "node app.js",
-    "lint": "npx @biomejs/biome check *.js",
-    "lint:fix": "npx @biomejs/biome check --write *.js"
+    "lint": "npx @biomejs/biome check *.js ai/ listeners/",
+    "lint:fix": "npx @biomejs/biome check --write *.js ai/ listeners/"
   },
   "author": "Slack Technologies, LLC",
   "license": "MIT",
