@@ -1,7 +1,7 @@
 {
-  "name": "bolt-js-agent-template",
+  "name": "bolt-js-ai-agent-template",
   "version": "1.0.0",
-  "description": "A template for building Slack app Agents",
+  "description": "A template for building AI-enabled Slack apps",
   "type": "module",
   "main": "app.js",
   "scripts": {

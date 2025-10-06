@@ -1,4 +1,4 @@
-# AI App Template (Bolt for JavaScript)
+# AI Agent App Template (Bolt for JavaScript)
 
 This Bolt for JavaScript template demonstrates how to build [AI Apps](https://docs.slack.dev/ai/) in Slack.
 
