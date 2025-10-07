@@ -1,6 +1,6 @@
 {
   "display_information": {
-    "name": "Bolt for JavaScript Assistant"
+    "name": "Bolt JS AI Agent"
   },
   "features": {
     "app_home": {
@@ -9,11 +9,11 @@
       "messages_tab_read_only_enabled": false
     },
     "bot_user": {
-      "display_name": "Bolt for JavaScript Assistant",
+      "display_name": "Bolt JS AI Agent",
       "always_online": false
     },
     "assistant_view": {
-      "assistant_description": "An Assistant built with Bolt for JavaScript, at your service!",
+      "assistant_description": "An AI Agent built with Bolt for JavaScript, at your service!",
       "suggested_prompts": []
     }
   },

@@ -1,6 +1,6 @@
-# App Agent & Assistant Template (Bolt for JavaScript)
+# AI Agent App Template (Bolt for JavaScript)
 
-This Bolt for JavaScript template demonstrates how to build [Agents & Assistants](https://api.slack.com/docs/apps/ai) in Slack.
+This Bolt for JavaScript template demonstrates how to build [AI Apps](https://docs.slack.dev/ai/) in Slack.
 
 Models from [OpenAI](https://openai.com) are used and can be customized for prompts of all kinds.
 
