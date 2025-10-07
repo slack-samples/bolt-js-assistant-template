@@ -1,9 +1,6 @@
+import 'dotenv/config';
 import { App, LogLevel } from '@slack/bolt';
-import { config } from 'dotenv';
 import { registerListeners } from './listeners/index.js';
-
-// Load environment variables
-config();
 
 // Initialize the Bolt app
 const app = new App({
