@@ -1,13 +1,14 @@
 {
-  "name": "bolt-js-assistant-template",
+  "name": "bolt-js-ai-agent-template",
   "version": "1.0.0",
-  "description": "A template for building Slack app Assistants",
+  "description": "A template for building AI-enabled Slack apps",
+  "type": "module",
   "main": "app.js",
   "scripts": {
-    "check": "npx tsc --checkJs --noEmit --esModuleInterop app.js",
+    "check": "npx tsc --checkJs --noEmit --esModuleInterop --target esnext --module nodenext --moduleResolution nodenext app.js",
     "start": "node app.js",
-    "lint": "npx @biomejs/biome check *.js",
-    "lint:fix": "npx @biomejs/biome check --write *.js"
+    "lint": "npx @biomejs/biome check *.js ai/ listeners/",
+    "lint:fix": "npx @biomejs/biome check --write *.js ai/ listeners/"
   },
   "author": "Slack Technologies, LLC",
   "license": "MIT",
@@ -24,9 +25,9 @@
     "url": "https://github.com/slack-samples/bolt-js-assistant-template/issues"
   },
   "dependencies": {
-    "@huggingface/inference": "^4.9.0",
-    "@slack/bolt": "^4.4.0",
-    "dotenv": "~17.2.3"
+    "@slack/bolt": "^4.5.0",
+    "dotenv": "~17.2.3",
+    "openai": "^4.104.0"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.4",

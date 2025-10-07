@@ -1,8 +1,8 @@
-# App Agent & Assistant Template (Bolt for JavaScript)
+# AI Agent App Template (Bolt for JavaScript)
 
-This Bolt for JavaScript template demonstrates how to build [Agents & Assistants](https://api.slack.com/docs/apps/ai) in Slack.
+This Bolt for JavaScript template demonstrates how to build [AI Apps](https://docs.slack.dev/ai/) in Slack.
 
-Models from the [Hugging Face](https://huggingface.co) platform are used and can be customized for prompts of all kinds.
+Models from [OpenAI](https://openai.com) are used and can be customized for prompts of all kinds.
 
 ## Setup
 
@@ -28,17 +28,21 @@ Join the [Slack Developer Program](https://api.slack.com/developer-program) for 
 
 Before you can run the app, you'll need to store some environment variables.
 
-1. Rename `.env.sample` to `.env`
-2. Open your apps setting page from
-   [this list](https://api.slack.com/apps), click _OAuth & Permissions_ in the
-   left hand menu, then copy the _Bot User OAuth Token_ into your `.env` file
-   under `SLACK_BOT_TOKEN`
-3. Click _Basic Information_ from the left hand menu and follow the steps in the
-   _App-Level Tokens_ section to create an app-level token with the
-   `connections:write` scope. Copy that token into your `.env` as
-   `SLACK_APP_TOKEN`.
 
-A fine grained [access token](https://huggingface.co/settings/tokens) with the "Make calls to Inference Providers" permission from Hugging Face is also needed. Store this as `HUGGINGFACE_API_KEY`.
+1. Rename `.env.sample` to `.env`.
+2. Open your apps setting page from [this list](https://api.slack.com/apps), click _OAuth & Permissions_ in the left hand menu, then copy the _Bot User OAuth Token_ into your `.env` file under `SLACK_BOT_TOKEN`.
+```zsh
+SLACK_BOT_TOKEN=YOUR_SLACK_BOT_TOKEN
+```
+3. Click _Basic Information_ from the left hand menu and follow the steps in the _App-Level Tokens_ section to create an app-level token with the `connections:write` scope. Copy that token into your `.env` as `SLACK_APP_TOKEN`.
+```zsh
+SLACK_APP_TOKEN=YOUR_SLACK_APP_TOKEN
+```
+4. Save your OpenAI key into `.env` under `OPENAI_API_KEY`.
+```zsh
+OPENAI_API_KEY=YOUR_OPEN_API_KEY
+```
+
 
 ### Local Project
 
