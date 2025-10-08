@@ -1,27 +1,28 @@
 /**
- * `feedbackActionCallback` action responds to the `feedbackBlock` that displays positive
- * and negative feedback icons. This block is attached to the bottom of
- * LLM responses using the `WebClient#chatStream.stop()` method.
+ * The `feedbackActionCallback` action responds to the `feedbackBlock` that displays
+ * positive and negative feedback icons. This block is attached to the bottom of LLM
+ * responses using the `WebClient#chatStream.stop()` method.
+ *
+ * @param {Object} params
+ * @param {import("@slack/bolt").AckFn<any>} params.ack - Acknowledgement function.
+ * @param {import("@slack/bolt").SlackAction} params.body - Action payload.
+ * @param {import("@slack/web-api").WebClient} params.client - Slack web client.
+ * @param {import("@slack/logger").Logger} params.logger - Logger instance.
  */
 export const feedbackActionCallback = async ({ ack, body, client, logger }) => {
   try {
     await ack();
 
-    if (body.type !== 'block_actions') {
+    if (body.type !== 'block_actions' || body.actions[0].type !== 'feedback_buttons') {
       return;
     }
 
     const message_ts = body.message.ts;
     const channel_id = body.channel.id;
     const user_id = body.user.id;
+    const value = body.actions[0].value;
 
-    const feedback_type = body.actions[0];
-    if (!('value' in feedback_type)) {
-      return;
-    }
-
-    const is_positive = feedback_type.value === 'good-feedback';
-    if (is_positive) {
+    if (value === 'good-feedback') {
       await client.chat.postEphemeral({
         channel: channel_id,
         user: user_id,
