@@ -30,15 +30,14 @@ slack login
 #### Initializing the project
 
 ```sh
-slack create bolt-python-search --template slack-samples/bolt-python-search-template
-cd bolt-python-search
+# Clone this project onto your machine
+git clone https://github.com/slack-samples/bolt-js-assistant-template.git
 
-# Setup your python virtual environment
-python3 -m venv .venv
-source .venv/bin/activate
+# Change into this project directory
+cd bolt-js-assistant-template
 
-# Install the dependencies
-pip install -e . 
+# Install dependencies
+npm install
 ```
 
 #### Creating the Slack app
