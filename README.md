@@ -14,15 +14,55 @@ Join the [Slack Developer Program](https://api.slack.com/developer-program) for 
 
 ## Installation
 
-### Create a Slack App
+### Using Slack CLI
 
-1. Open [https://api.slack.com/apps/new](https://api.slack.com/apps/new) and
-   choose "From an app manifest"
+Install the latest version of the Slack CLI for your operating system:
+
+- [Slack CLI for macOS & Linux](https://docs.slack.dev/tools/slack-cli/guides/installing-the-slack-cli-for-mac-and-linux/)
+- [Slack CLI for Windows](https://docs.slack.dev/tools/slack-cli/guides/installing-the-slack-cli-for-windows/)
+
+You'll also need to log in if this is your first time using the Slack CLI.
+
+```sh
+slack login
+```
+
+#### Initializing the project
+
+```sh
+slack create bolt-python-search --template slack-samples/bolt-python-search-template
+cd bolt-python-search
+
+# Setup your python virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
+
+# Install the dependencies
+pip install -e . 
+```
+
+#### Creating the Slack app
+
+```sh
+slack install
+```
+
+#### Running the app
+
+```sh
+slack run
+```
+
+
+<summary><h3>Using Terminal</h3></summary>
+<details>
+
+1. Open [https://api.slack.com/apps/new](https://api.slack.com/apps/new) and choose "From an app manifest"
 2. Choose the workspace you want to install the application to
-3. Copy the contents of [manifest.json](./manifest.json) into the text box that
-   says `*Paste your manifest code here*` (within the JSON tab) and click _Next_
+3. Copy the contents of [manifest.json](./manifest.json) into the text box that says `*Paste your manifest code here*` (within the JSON tab) and click _Next_
 4. Review the configuration and click _Create_
-5. You'll then be redirected to App Settings. Visit the **Install App** page and install your app.
+5. Click _Install to Workspace_ and _Allow_ on the screen that follows. You'll then be redirected to the App Configuration dashboard.
+</details>
 
 ### Environment Variables
 
@@ -76,3 +116,17 @@ npm run lint
 ### `app.js`
 
 `app.js` is the entry point for the application and is the file you'll run to start the server. This project aims to keep this file as thin as possible, primarily using it as a way to route inbound requests.
+
+### `/listeners`
+
+Every incoming request is routed to a "listener". This directory groups each listener based on the Slack Platform feature used, so `/listeners/events` handles incoming events, `/listeners/shortcuts` would handle incoming [Shortcuts](https://docs.slack.dev/interactivity/implementing-shortcuts/) requests, and so on.
+
+**`/listeners/assistant`**
+
+Configures the new Slack Assistant features, providing a dedicated side panel UI for users to interact with the AI chatbot. This module includes:
+
+- The `assistant_thread_started.js` file, which responds to new app threads with a list of suggested prompts.
+- The `message.js` file, which responds to user messages sent to app threads or from the **Chat** and **History** tab with an LLM generated response.
+
+### `ai/`
+The `index.js` file handles the OpenAI API initialization and configuration.
