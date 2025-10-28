@@ -30,14 +30,8 @@ slack login
 #### Initializing the project
 
 ```sh
-# Clone this project onto your machine
-git clone https://github.com/slack-samples/bolt-js-assistant-template.git
-
-# Change into this project directory
-cd bolt-js-assistant-template
-
-# Install dependencies
-npm install
+slack create bolt-js-assistant --template slack-samples/bolt-js-assistant-template
+cd bolt-js-assistant
 ```
 
 #### Creating the Slack app
