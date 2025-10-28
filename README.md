@@ -46,9 +46,8 @@ slack install
 slack run
 ```
 
-
-<summary><h3>Using Terminal</h3></summary>
 <details>
+<summary><h3>Using Terminal</h3></summary>
 
 1. Open [https://api.slack.com/apps/new](https://api.slack.com/apps/new) and choose "From an app manifest"
 2. Choose the workspace you want to install the application to
