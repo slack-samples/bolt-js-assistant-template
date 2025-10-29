@@ -65,7 +65,7 @@ SLACK_APP_TOKEN=YOUR_SLACK_APP_TOKEN
 
 ```sh
 git clone https://github.com/slack-samples/bolt-js-assistant-template.git
-cd bolt-js-assistant-template
+cd my-bolt-js-assistant
 ```
 
 #### Install dependencies
