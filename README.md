@@ -40,12 +40,6 @@ cd bolt-js-assistant
 slack install
 ```
 
-#### Running the app
-
-```sh
-slack run
-```
-
 ### Using Terminal
 
 1. Open [https://api.slack.com/apps/new](https://api.slack.com/apps/new) and choose "From an app manifest"
@@ -79,10 +73,6 @@ cd bolt-js-assistant-template
 npm install
 ```
 
-#### Run the app
-```sh
-npm start
-```
 ### Providers
 #### OpenAI Setup
 
@@ -92,6 +82,16 @@ Save your OpenAI key into `.env` under `OPENAI_API_KEY`.
 OPENAI_API_KEY=YOUR_OPEN_API_KEY
 ```
 ### Development
+#### Starting the app
+##### Slack CLI
+```sh
+slack run
+```
+##### Terminal
+```sh
+npm start
+```
+
 #### Linting
 
 ```zsh
