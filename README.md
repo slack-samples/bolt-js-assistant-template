@@ -38,9 +38,13 @@ cd my-bolt-js-assistant
 
 #### Creating the Slack app
 
+Use the following command to add your new Slack app to your development workspace. Choose a "local" app environment for upcoming development:
+
 ```sh
 slack install
 ```
+
+After the Slack app has been created you're all set to configure the LLM provider!
 
 ### Using Terminal
 
