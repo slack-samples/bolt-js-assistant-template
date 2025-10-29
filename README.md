@@ -30,8 +30,8 @@ slack login
 #### Initializing the project
 
 ```sh
-slack create bolt-js-assistant --template slack-samples/bolt-js-assistant-template
-cd bolt-js-assistant
+slack create my-bolt-js-assistant --template slack-samples/bolt-js-assistant-template
+cd my-bolt-js-assistant
 ```
 
 #### Creating the Slack app
