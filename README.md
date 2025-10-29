@@ -14,6 +14,8 @@ Join the [Slack Developer Program](https://api.slack.com/developer-program) for 
 
 ## Installation
 
+Add this app to your workspace using either the Slack CLI or other development tooling, then read ahead to configuring LLM responses in the **[Providers](#providers)** section.
+
 ### Using Slack CLI
 
 Install the latest version of the Slack CLI for your operating system:
