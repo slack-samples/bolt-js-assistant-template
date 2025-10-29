@@ -64,7 +64,7 @@ SLACK_APP_TOKEN=YOUR_SLACK_APP_TOKEN
 #### Initializing the project
 
 ```sh
-git clone https://github.com/slack-samples/bolt-js-assistant-template.git
+git clone https://github.com/slack-samples/bolt-js-assistant-template.git my-bolt-js-assistant
 cd my-bolt-js-assistant
 ```
 
