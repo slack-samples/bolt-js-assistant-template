@@ -73,7 +73,7 @@ cd my-bolt-js-assistant
 npm install
 ```
 
-### Providers
+## Providers
 #### OpenAI Setup
 
 Unlock the OpenAI models from your OpenAI account dashboard by clicking [create a new secret key](https://platform.openai.com/api-keys), then save your OpenAI key into the `.env` file as `OPENAI_API_KEY` like so:
