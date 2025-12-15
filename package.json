@@ -6,7 +6,7 @@
   "main": "app.js",
   "scripts": {
     "check": "npx tsc --checkJs --noEmit --esModuleInterop --target esnext --module nodenext --moduleResolution nodenext app.js",
-    "start": "node app.js",
+    "start": "node --watch app.js",
     "lint": "npx @biomejs/biome check *.js ai/ listeners/",
     "lint:fix": "npx @biomejs/biome check --write *.js ai/ listeners/"
   },
