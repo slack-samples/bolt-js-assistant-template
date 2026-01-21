@@ -6,7 +6,7 @@ Models from [OpenAI](https://openai.com) are used and can be customized for prom
 
 ## Setup
 
-Before getting started, make sure you have a development workspace where you have permissions to install apps. If you don’t have one setup, go ahead and [create one](https://slack.com/create).
+Before getting started, make sure you have a development workspace where you have permissions to install apps. If you don't have one setup, go ahead and [create one](https://slack.com/create).
 
 ### Developer Program
 
@@ -110,6 +110,8 @@ slack run
 npm start
 ```
 
+Start talking to the bot! Start a new DM or thread and click the feedback button when it responds.
+
 ### Linting
 
 ```zsh
@@ -138,6 +140,8 @@ Configures the new Slack Assistant features, providing a dedicated side panel UI
 - The `assistant_thread_started.js` file, which responds to new app threads with a list of suggested prompts.
 - The `message.js` file, which responds to user messages sent to app threads or from the **Chat** and **History** tab with an LLM generated response.
 
-### `/ai`
+### `/agent`
 
-The `index.js` file handles the OpenAI API initialization and configuration.
+The `llm_caller.js` file calls the OpenAI API and streams the generated response into a Slack conversation.
+
+The `tools` directory contains app-specific functions for the LLM to call.

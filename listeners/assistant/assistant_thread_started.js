@@ -40,12 +40,12 @@ export const assistantThreadStarted = async ({ event, logger, say, setSuggestedP
         title: 'Start with this suggested prompt:',
         prompts: [
           {
-            title: 'This is a suggested prompt',
-            message:
-              'When a user clicks a prompt, the resulting prompt message text ' +
-              'can be passed directly to your LLM for processing.\n\n' +
-              'Assistant, please create some helpful prompts I can provide to ' +
-              'my users.',
+            title: 'Prompt a task with thinking steps',
+            message: 'Wonder a few deep thoughts.',
+          },
+          {
+            title: 'Roll dice for a random number',
+            message: 'Roll two 12-sided dice and three 6-sided dice for a psuedo-random score.',
           },
         ],
       });
