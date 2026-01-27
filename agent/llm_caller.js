@@ -35,12 +35,7 @@ export async function callLlm(streamer, prompts) {
     // Stream markdown text from the LLM response as it arrives
     if (event.type === 'response.output_text.delta' && event.delta) {
       await streamer.append({
-        chunks: [
-          {
-            type: 'markdown_text',
-            text: event.delta,
-          },
-        ],
+        markdown_text: event.delta,
       });
     }
 
