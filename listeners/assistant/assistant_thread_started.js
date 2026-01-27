@@ -50,23 +50,6 @@ export const assistantThreadStarted = async ({ event, logger, say, setSuggestedP
         ],
       });
     }
-
-    /**
-     * If the user opens the Assistant container in a channel, additional
-     * context is available. This can be used to provide conditional prompts
-     * that only make sense to appear in that context.
-     */
-    if (context.channel_id) {
-      await setSuggestedPrompts({
-        title: 'Perform an action based on the channel',
-        prompts: [
-          {
-            title: 'Summarize channel',
-            message: 'Assistant, please summarize the activity in this channel!',
-          },
-        ],
-      });
-    }
   } catch (e) {
     logger.error(e);
   }

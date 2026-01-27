@@ -1,11 +1,6 @@
 import { callLlm } from '../../agent/llm_caller.js';
 import { feedbackBlock } from '../views/feedback_block.js';
 
-/**
- * Helper function to pause execution for a specified duration.
- * @param {number} ms - Milliseconds to sleep
- * @returns {Promise<void>}
- */
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
@@ -39,39 +34,8 @@ export const message = async ({ client, context, logger, message, say, setStatus
     const { channel, thread_ts } = message;
     const { userId, teamId } = context;
 
-    // This first example shows a generated text response for the provided prompt
-    if (message.text !== 'Wonder a few deep thoughts.') {
-      await setStatus({
-        status: 'thinking...',
-        loading_messages: [
-          'Teaching the hamsters to type faster…',
-          'Untangling the internet cables…',
-          'Consulting the office goldfish…',
-          'Polishing up the response just for you…',
-          'Convincing the AI to stop overthinking…',
-        ],
-      });
-
-      const streamer = client.chatStream({
-        channel: channel,
-        recipient_team_id: teamId,
-        recipient_user_id: userId,
-        thread_ts: thread_ts,
-        task_display_mode: 'timeline',
-      });
-
-      const prompts = [
-        {
-          role: 'user',
-          content: message.text,
-        },
-      ];
-
-      await callLlm(streamer, prompts);
-
-      await streamer.stop({ blocks: [feedbackBlock] });
-    } else {
-      // The second example shows detailed thinking steps similar to tool calls
+    // The first example shows detailed thinking steps similar to tool calls
+    if (message.text === 'Wonder a few deep thoughts.') {
       const streamer = client.chatStream({
         channel: channel,
         recipient_team_id: teamId,
@@ -152,6 +116,36 @@ export const message = async ({ client, context, logger, message, say, setStatus
           },
         ],
       });
+    } else {
+      // This second example shows a generated text response for the provided prompt
+      await setStatus({
+        status: 'thinking...',
+        loading_messages: [
+          'Teaching the hamsters to type faster…',
+          'Untangling the internet cables…',
+          'Consulting the office goldfish…',
+          'Polishing up the response just for you…',
+          'Convincing the AI to stop overthinking…',
+        ],
+      });
+
+      const streamer = client.chatStream({
+        channel: channel,
+        recipient_team_id: teamId,
+        recipient_user_id: userId,
+        thread_ts: thread_ts,
+        task_display_mode: 'timeline',
+      });
+
+      const prompts = [
+        {
+          role: 'user',
+          content: message.text,
+        },
+      ];
+
+      await callLlm(streamer, prompts);
+      await streamer.stop({ blocks: [feedbackBlock] });
     }
   } catch (e) {
     logger.error(`Failed to handle a user message event: ${e}`);

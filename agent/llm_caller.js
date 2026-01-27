@@ -20,14 +20,11 @@ export const openai = new OpenAI({
 export async function callLlm(streamer, prompts) {
   const toolCalls = [];
 
-  // Check if this is a follow-up call with tool results (don't force tools then)
-  const hasToolOutput = prompts.some((p) => p.type === 'function_call_output');
-
   const response = await openai.responses.create({
     model: 'gpt-4o-mini',
     input: prompts,
     tools: [rollDiceDefinition],
-    tool_choice: hasToolOutput ? 'auto' : 'required',
+    tool_choice: 'auto',
     stream: true,
   });
 
