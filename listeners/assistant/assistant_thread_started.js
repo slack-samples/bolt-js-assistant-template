@@ -45,7 +45,7 @@ export const assistantThreadStarted = async ({ event, logger, say, setSuggestedP
           },
           {
             title: 'Roll dice for a random number',
-            message: 'Roll two 12-sided dice and three 6-sided dice for a psuedo-random score.',
+            message: 'Roll two 12-sided dice and three 6-sided dice for a pseudo-random score.',
           },
         ],
       });
