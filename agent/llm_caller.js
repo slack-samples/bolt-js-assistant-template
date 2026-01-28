@@ -58,7 +58,7 @@ export async function callLlm(streamer, prompts) {
     }
   }
 
-  // Perform tool calls and markd tasks as completed
+  // Perform tool calls and marks tasks as completed
   if (toolCalls.length > 0) {
     for (const call of toolCalls) {
       if (call.name === 'roll_dice') {
