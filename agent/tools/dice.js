@@ -36,7 +36,7 @@ export function rollDice({ sides = 6, count = 1 } = {}) {
 /**
  * Tool definition for OpenAI API
  *
- * @type {import('openai/resources/responses/responses'.Tool)}
+ * @type {import('openai/resources/responses/responses').Tool}
  * @see {@link https://platform.openai.com/docs/guides/function-calling}
  */
 export const rollDiceDefinition = {
