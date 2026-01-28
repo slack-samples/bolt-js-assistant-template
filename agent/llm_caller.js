@@ -9,7 +9,7 @@ export const openai = new OpenAI({
 /**
  * Stream an LLM response to prompts with an example dice rolling function
  *
- * @param {import("@slack/web-api").ChatStream} streamer - Slack chat stream
+ * @param {import("@slack/web-api").ChatStreamer} streamer - Slack chat stream
  * @param {Array} prompts - OpenAI ResponseInputParam messages
  *
  * @see {@link https://docs.slack.dev/tools/bolt-js/web#sending-streaming-messages}
