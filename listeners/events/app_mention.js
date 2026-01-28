@@ -1,4 +1,4 @@
-import { callLlm } from '../../agent/llm_caller.js';
+import { callLLm } from '../../agent/llm_caller.js';
 import { feedbackBlock } from '../views/feedback_block.js';
 
 /**
@@ -45,7 +45,7 @@ export const appMentionCallback = async ({ event, client, logger, say }) => {
       },
     ];
 
-    await callLlm(streamer, prompts);
+    await callLLm(streamer, prompts);
 
     await streamer.stop({ blocks: [feedbackBlock] });
   } catch (e) {

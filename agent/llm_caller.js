@@ -2,7 +2,7 @@ import { OpenAI } from 'openai';
 import { rollDice, rollDiceDefinition } from './tools/dice.js';
 
 // OpenAI LLM client
-export const openai = new OpenAI({
+const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
@@ -17,7 +17,7 @@ export const openai = new OpenAI({
  * @see {@link https://platform.openai.com/docs/guides/streaming-responses}
  * @see {@link https://platform.openai.com/docs/guides/function-calling}
  */
-export async function callLlm(streamer, prompts) {
+export async function callLLm(streamer, prompts) {
   const toolCalls = [];
 
   const response = await openai.responses.create({
@@ -107,6 +107,6 @@ export async function callLlm(streamer, prompts) {
     }
 
     // complete the llm response after making tool calls
-    await callLlm(streamer, prompts);
+    await callLLm(streamer, prompts);
   }
 }

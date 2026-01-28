@@ -32,7 +32,12 @@
   },
   "settings": {
     "event_subscriptions": {
-      "bot_events": ["app_mention", "assistant_thread_context_changed", "assistant_thread_started", "message.im"]
+      "bot_events": [
+        "app_mention", 
+        "assistant_thread_context_changed", 
+        "assistant_thread_started", 
+        "message.im"
+      ]
     },
     "interactivity": {
       "is_enabled": false

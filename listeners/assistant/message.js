@@ -1,4 +1,4 @@
-import { callLlm } from '../../agent/llm_caller.js';
+import { callLLm } from '../../agent/llm_caller.js';
 import { feedbackBlock } from '../views/feedback_block.js';
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -34,8 +34,21 @@ export const message = async ({ client, context, logger, message, say, setStatus
     const { channel, thread_ts } = message;
     const { userId, teamId } = context;
 
-    // The first example shows detailed thinking steps similar to tool calls
+    // The first example shows a message with thinking steps that has different chunks to construct and update a plan alongside text outputs.
     if (message.text === 'Wonder a few deep thoughts.') {
+      await setStatus({
+        status: 'thinking...',
+        loading_messages: [
+          'Teaching the hamsters to type faster…',
+          'Untangling the internet cables…',
+          'Consulting the office goldfish…',
+          'Polishing up the response just for you…',
+          'Convincing the AI to stop overthinking…',
+        ],
+      });
+
+      await sleep(4000);
+
       const streamer = client.chatStream({
         channel: channel,
         recipient_team_id: teamId,
@@ -115,6 +128,7 @@ export const message = async ({ client, context, logger, message, say, setStatus
             text: 'The crowd appears to be astounded and applauds :popcorn:',
           },
         ],
+        blocks: [feedbackBlock],
       });
     } else {
       // This second example shows a generated text response for the provided prompt
@@ -144,7 +158,7 @@ export const message = async ({ client, context, logger, message, say, setStatus
         },
       ];
 
-      await callLlm(streamer, prompts);
+      await callLLm(streamer, prompts);
       await streamer.stop({ blocks: [feedbackBlock] });
     }
   } catch (e) {
