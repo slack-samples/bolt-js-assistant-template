@@ -112,7 +112,7 @@ export const message = async ({ client, context, logger, message, say, setStatus
           },
           {
             type: 'markdown_text',
-            text: 'The crowd appears to be astouned and applauds :popcorn:',
+            text: 'The crowd appears to be astounded and applauds :popcorn:',
           },
         ],
       });
