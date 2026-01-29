@@ -17,7 +17,7 @@ const openai = new OpenAI({
  * @see {@link https://platform.openai.com/docs/guides/streaming-responses}
  * @see {@link https://platform.openai.com/docs/guides/function-calling}
  */
-export async function callLLm(streamer, prompts) {
+export async function callLLM(streamer, prompts) {
   const toolCalls = [];
 
   const response = await openai.responses.create({
@@ -107,6 +107,6 @@ export async function callLLm(streamer, prompts) {
     }
 
     // complete the llm response after making tool calls
-    await callLLm(streamer, prompts);
+    await callLLM(streamer, prompts);
   }
 }
