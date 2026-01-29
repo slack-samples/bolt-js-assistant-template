@@ -33,9 +33,9 @@
   "settings": {
     "event_subscriptions": {
       "bot_events": [
-        "app_mention", 
-        "assistant_thread_context_changed", 
-        "assistant_thread_started", 
+        "app_mention",
+        "assistant_thread_context_changed",
+        "assistant_thread_started",
         "message.im"
       ]
     },
