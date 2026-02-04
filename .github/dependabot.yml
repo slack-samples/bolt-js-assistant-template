@@ -7,6 +7,14 @@ updates:
     labels:
       - "npm"
       - "dependencies"
+    ignore:
+      - dependency-name: "@types/node"
+        versions:
+          - "21"
+          - "22"
+          - "23"
+          - "24"
+          - "25"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
