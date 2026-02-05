@@ -1,11 +1,9 @@
-import { DEFAULT_SYSTEM_CONTENT, openai } from '../../ai/index.js';
+import { callLLM } from '../../agent/llm-caller.js';
 import { feedbackBlock } from '../views/feedback_block.js';
 
 /**
- * The `appMentionCallback` event handler allows your app to receive message
- * events that directly mention your app. The app must be a member of the
- * channel/conversation to receive the event. Messages in a DM with your app
- * will not dispatch this event, event if the message mentions your app.
+ * Handles the event when the app is mentioned in a Slack conversation
+ * and generates an AI response.
  *
  * @param {Object} params
  * @param {import("@slack/types").AppMentionEvent} params.event - The app mention event.
@@ -20,7 +18,6 @@ export const appMentionCallback = async ({ event, client, logger, say }) => {
     const { channel, text, team, user } = event;
     const thread_ts = event.thread_ts || event.ts;
 
-    // Set the app's loading state while waiting for the LLM response
     await client.assistant.threads.setStatus({
       channel_id: channel,
       thread_ts: thread_ts,
@@ -34,34 +31,25 @@ export const appMentionCallback = async ({ event, client, logger, say }) => {
       ],
     });
 
-    // Send message history and newest question to LLM
-    const llmResponse = await openai.responses.create({
-      model: 'gpt-4o-mini',
-      input: `System: ${DEFAULT_SYSTEM_CONTENT}\n\nUser: ${text}`,
-      stream: true,
-    });
-
-    // Stream the LLM response to the channel
     const streamer = client.chatStream({
       channel: channel,
-      thread_ts: thread_ts,
       recipient_team_id: team,
       recipient_user_id: user,
+      thread_ts: thread_ts,
     });
 
-    for await (const chunk of llmResponse) {
-      if (chunk.type === 'response.output_text.delta') {
-        await streamer.append({
-          markdown_text: chunk.delta,
-        });
-      }
-    }
+    const prompts = [
+      {
+        role: 'user',
+        content: text,
+      },
+    ];
+
+    await callLLM(streamer, prompts);
 
     await streamer.stop({ blocks: [feedbackBlock] });
   } catch (e) {
-    logger.error(e);
-
-    // Send message to advise user and clear processing status if a failure occurs
-    await say({ text: `Sorry, something went wrong! ${e}` });
+    logger.error(`Failed to handle a user message event: ${e}`);
+    await say(`:warning: Something went wrong! (${e})`);
   }
 };

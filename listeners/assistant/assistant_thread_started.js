@@ -40,29 +40,12 @@ export const assistantThreadStarted = async ({ event, logger, say, setSuggestedP
         title: 'Start with this suggested prompt:',
         prompts: [
           {
-            title: 'This is a suggested prompt',
-            message:
-              'When a user clicks a prompt, the resulting prompt message text ' +
-              'can be passed directly to your LLM for processing.\n\n' +
-              'Assistant, please create some helpful prompts I can provide to ' +
-              'my users.',
+            title: 'Prompt a task with thinking steps',
+            message: 'Wonder a few deep thoughts.',
           },
-        ],
-      });
-    }
-
-    /**
-     * If the user opens the Assistant container in a channel, additional
-     * context is available. This can be used to provide conditional prompts
-     * that only make sense to appear in that context.
-     */
-    if (context.channel_id) {
-      await setSuggestedPrompts({
-        title: 'Perform an action based on the channel',
-        prompts: [
           {
-            title: 'Summarize channel',
-            message: 'Assistant, please summarize the activity in this channel!',
+            title: 'Roll dice for a random number',
+            message: 'Roll two 12-sided dice and three 6-sided dice for a pseudo-random score.',
           },
         ],
       });
