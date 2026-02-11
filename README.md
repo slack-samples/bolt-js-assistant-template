@@ -1,12 +1,19 @@
 # AI Agent App Template (Bolt for JavaScript)
 
-This Bolt for JavaScript template demonstrates how to build [AI Apps](https://docs.slack.dev/ai/) in Slack.
+This Bolt for JavaScript template demonstrates how to build [AI Apps](https://docs.slack.dev/ai/) in Slack, using models from [OpenAI](https://openai.com).
 
-Models from [OpenAI](https://openai.com) are used and can be customized for prompts of all kinds.
+## App overview
+
+Setting up this app can provide you with an AI agent that enables the following flow:
+
+* Users open the assistant side panel in Slack and see suggested prompts.
+* The app calls OpenAI's API when a user selects a prompt or sends a message.
+* The app streams in its response, which can be a combination of text and tasks.
+* Users provide feedback via buttons.
 
 ## Setup
 
-Before getting started, make sure you have a development workspace where you have permissions to install apps. If you don’t have one setup, go ahead and [create one](https://slack.com/create).
+Before getting started, make sure you have a development workspace where you have permissions to install apps. If you don't have one setup, go ahead and [create one](https://slack.com/create).
 
 ### Developer Program
 
@@ -16,8 +23,7 @@ Join the [Slack Developer Program](https://api.slack.com/developer-program) for 
 
 Add this app to your workspace using either the Slack CLI or other development tooling, then read ahead to configuring LLM responses in the **[Providers](#providers)** section.
 
-### Using Slack CLI
-
+<details><summary><strong>  Using Slack CLI </strong></summary>
 Install the latest version of the Slack CLI for your operating system:
 
 - [Slack CLI for macOS & Linux](https://docs.slack.dev/tools/slack-cli/guides/installing-the-slack-cli-for-mac-and-linux/)
@@ -45,9 +51,11 @@ slack install
 ```
 
 After the Slack app has been created you're all set to configure the LLM provider!
+</details>
 
-### Using Terminal
+<details><summary><strong>  Using Terminal </strong></summary>
 
+#### Create Your Slack App
 1. Open [https://api.slack.com/apps/new](https://api.slack.com/apps/new) and choose "From an app manifest"
 2. Choose the workspace you want to install the application to
 3. Copy the contents of [manifest.json](./manifest.json) into the text box that says `*Paste your manifest code here*` (within the JSON tab) and click _Next_
@@ -83,6 +91,7 @@ cd my-bolt-js-assistant
 ```sh
 npm install
 ```
+</details>
 
 ## Providers
 
@@ -109,6 +118,8 @@ slack run
 ```sh
 npm start
 ```
+
+Start talking to the bot! Start a new DM or thread and click the feedback button when it responds.
 
 ### Linting
 
@@ -138,6 +149,8 @@ Configures the new Slack Assistant features, providing a dedicated side panel UI
 - The `assistant_thread_started.js` file, which responds to new app threads with a list of suggested prompts.
 - The `message.js` file, which responds to user messages sent to app threads or from the **Chat** and **History** tab with an LLM generated response.
 
-### `/ai`
+### `/agent`
 
-The `index.js` file handles the OpenAI API initialization and configuration.
+The `llm-caller.js` file calls the OpenAI API and streams the generated response into a Slack conversation.
+
+The `tools` directory contains app-specific functions for the LLM to call.

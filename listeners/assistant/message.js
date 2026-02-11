@@ -1,22 +1,23 @@
-import { DEFAULT_SYSTEM_CONTENT, openai } from '../../ai/index.js';
+import { callLLM } from '../../agent/llm-caller.js';
 import { feedbackBlock } from '../views/feedback_block.js';
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 /**
- * The `message` event is sent when the user direct messages the app in a DM or Assistant container.
+ * Handles when users send messages or select a prompt in an assistant thread
+ * and generate AI responses.
  *
  * @param {Object} params
  * @param {import("@slack/web-api").WebClient} params.client - Slack web client.
  * @param {import("@slack/bolt").Context} params.context - Event context.
  * @param {import("@slack/logger").Logger} params.logger - Logger instance.
  * @param {import("@slack/types").MessageEvent} params.message - The incoming message.
- * @param {Function} params.getThreadContext - Function to get thread context.
  * @param {import("@slack/bolt").SayFn} params.say - Function to send messages.
- * @param {Function} params.setTitle - Function to set assistant thread title.
  * @param {Function} params.setStatus - Function to set assistant status.
  *
  * @see {@link https://docs.slack.dev/reference/events/message}
  */
-export const message = async ({ client, context, logger, message, getThreadContext, say, setTitle, setStatus }) => {
+export const message = async ({ client, context, logger, message, say, setStatus }) => {
   /**
    * Messages sent to the Assistant can have a specific message subtype.
    *
@@ -28,137 +29,140 @@ export const message = async ({ client, context, logger, message, getThreadConte
   if (!('text' in message) || !('thread_ts' in message) || !message.text || !message.thread_ts) {
     return;
   }
-  const { channel, thread_ts } = message;
-  const { userId, teamId } = context;
 
   try {
-    /**
-     * Set the title of the Assistant thread to capture the initial topic/question
-     * as a way to facilitate future reference by the user.
-     *
-     * @see {@link https://docs.slack.dev/reference/methods/assistant.threads.setTitle}
-     */
-    await setTitle(message.text);
+    const { channel, thread_ts } = message;
+    const { userId, teamId } = context;
 
-    /**
-     * Set the status of the Assistant to give the appearance of active processing.
-     *
-     * @see {@link https://docs.slack.dev/reference/methods/assistant.threads.setStatus}
-     */
-    await setStatus({
-      status: 'thinking...',
-      loading_messages: [
-        'Teaching the hamsters to type faster…',
-        'Untangling the internet cables…',
-        'Consulting the office goldfish…',
-        'Polishing up the response just for you…',
-        'Convincing the AI to stop overthinking…',
-      ],
-    });
-
-    /** Scenario 1: Handle suggested prompt selection
-     * The example below uses a prompt that relies on the context (channel) in which
-     * the user has asked the question (in this case, to summarize that channel).
-     */
-    if (message.text === 'Assistant, please summarize the activity in this channel!') {
-      const threadContext = await getThreadContext();
-      let channelHistory;
-
-      try {
-        channelHistory = await client.conversations.history({
-          channel: threadContext.channel_id,
-          limit: 50,
-        });
-      } catch (e) {
-        // If the Assistant is not in the channel it's being asked about,
-        // have it join the channel and then retry the API call
-        if (e.data.error === 'not_in_channel') {
-          await client.conversations.join({ channel: threadContext.channel_id });
-          channelHistory = await client.conversations.history({
-            channel: threadContext.channel_id,
-            limit: 50,
-          });
-        } else {
-          logger.error(e);
-        }
-      }
-
-      // Prepare and tag the prompt and messages for LLM processing
-      let llmPrompt = `Please generate a brief summary of the following messages from Slack channel <#${threadContext.channel_id}>:`;
-      for (const m of channelHistory.messages.reverse()) {
-        if (m.user) llmPrompt += `\n<@${m.user}> says: ${m.text}`;
-      }
-
-      // Send channel history and prepared request to LLM
-      const llmResponse = await openai.responses.create({
-        model: 'gpt-4o-mini',
-        input: `System: ${DEFAULT_SYSTEM_CONTENT}\n\nUser: ${llmPrompt}`,
-        stream: true,
+    // The first example shows a message with thinking steps that has different chunks to construct and update a plan alongside text outputs.
+    if (message.text === 'Wonder a few deep thoughts.') {
+      await setStatus({
+        status: 'thinking...',
+        loading_messages: [
+          'Teaching the hamsters to type faster…',
+          'Untangling the internet cables…',
+          'Consulting the office goldfish…',
+          'Polishing up the response just for you…',
+          'Convincing the AI to stop overthinking…',
+        ],
       });
 
-      // Provide a response to the user
+      await sleep(4000);
+
       const streamer = client.chatStream({
         channel: channel,
         recipient_team_id: teamId,
         recipient_user_id: userId,
         thread_ts: thread_ts,
+        task_display_mode: 'plan',
       });
 
-      for await (const chunk of llmResponse) {
-        if (chunk.type === 'response.output_text.delta') {
-          await streamer.append({
-            markdown_text: chunk.delta,
-          });
-        }
-      }
+      await streamer.append({
+        chunks: [
+          {
+            type: 'markdown_text',
+            text: 'Hello.\nI have received the task. ',
+          },
+          {
+            type: 'markdown_text',
+            text: 'This task appears manageable.\nThat is good.',
+          },
+          {
+            type: 'task_update',
+            id: '001',
+            title: 'Understanding the task...',
+            status: 'in_progress',
+            details: '- Identifying the goal\n- Identifying constraints',
+          },
+          {
+            type: 'task_update',
+            id: '002',
+            title: 'Performing acrobatics...',
+            status: 'pending',
+          },
+        ],
+      });
+
+      await sleep(4000);
+
+      await streamer.append({
+        chunks: [
+          {
+            type: 'plan_update',
+            title: 'Adding the final pieces...',
+          },
+          {
+            type: 'task_update',
+            id: '001',
+            title: 'Understanding the task...',
+            status: 'complete',
+            details: '\n- Pretending this was obvious',
+            output: "We'll continue to ramble now",
+          },
+          {
+            type: 'task_update',
+            id: '002',
+            title: 'Performing acrobatics...',
+            status: 'in_progress',
+          },
+        ],
+      });
+
+      await sleep(4000);
+
+      await streamer.stop({
+        chunks: [
+          {
+            type: 'plan_update',
+            title: 'Decided to put on a show',
+          },
+          {
+            type: 'task_update',
+            id: '002',
+            title: 'Performing acrobatics...',
+            status: 'complete',
+            details: '- Jumped atop ropes\n- Juggled bowling pins\n- Rode a single wheel too',
+          },
+          {
+            type: 'markdown_text',
+            text: 'The crowd appears to be astounded and applauds :popcorn:',
+          },
+        ],
+        blocks: [feedbackBlock],
+      });
+    } else {
+      // This second example shows a generated text response for the provided prompt
+      await setStatus({
+        status: 'thinking...',
+        loading_messages: [
+          'Teaching the hamsters to type faster…',
+          'Untangling the internet cables…',
+          'Consulting the office goldfish…',
+          'Polishing up the response just for you…',
+          'Convincing the AI to stop overthinking…',
+        ],
+      });
+
+      const streamer = client.chatStream({
+        channel: channel,
+        recipient_team_id: teamId,
+        recipient_user_id: userId,
+        thread_ts: thread_ts,
+        task_display_mode: 'timeline',
+      });
+
+      const prompts = [
+        {
+          role: 'user',
+          content: message.text,
+        },
+      ];
+
+      await callLLM(streamer, prompts);
       await streamer.stop({ blocks: [feedbackBlock] });
-      return;
     }
-
-    /**
-     * Scenario 2: Format and pass user messages directly to the LLM
-     */
-
-    // Retrieve the Assistant thread history for context of question being asked
-    const thread = await client.conversations.replies({
-      channel,
-      ts: thread_ts,
-      oldest: thread_ts,
-    });
-
-    // Prepare and tag each message for LLM processing
-    const threadHistory = thread.messages.map((m) => {
-      const role = m.bot_id ? 'Assistant' : 'User';
-      return `${role}: ${m.text || ''}`;
-    });
-    // parsed threadHistory to align with openai.responses api input format
-    const parsedThreadHistory = threadHistory.join('\n');
-
-    // Send message history and newest question to LLM
-    const llmResponse = await openai.responses.create({
-      model: 'gpt-4o-mini',
-      input: `System: ${DEFAULT_SYSTEM_CONTENT}\n\n${parsedThreadHistory}\nUser: ${message.text}`,
-      stream: true,
-    });
-    const streamer = client.chatStream({
-      channel: channel,
-      recipient_team_id: teamId,
-      recipient_user_id: userId,
-      thread_ts: thread_ts,
-    });
-
-    for await (const chunk of llmResponse) {
-      if (chunk.type === 'response.output_text.delta') {
-        await streamer.append({
-          markdown_text: chunk.delta,
-        });
-      }
-    }
-    await streamer.stop({ blocks: [feedbackBlock] });
   } catch (e) {
-    logger.error(e);
-
-    // Send message to advise user and clear processing status if a failure occurs
-    await say({ text: `Sorry, something went wrong! ${e}` });
+    logger.error(`Failed to handle a user message event: ${e}`);
+    await say(`:warning: Something went wrong! (${e})`);
   }
 };
