@@ -4,7 +4,7 @@
  * @param {Object} options - The roll options
  * @param {number} [options.sides=6] - The number of sides on the die
  * @param {number} [options.count=1] - The number of dice to roll
- * @returns {Object} The roll results with rolls array, total, and description
+ * @returns {{ rolls: number[], total: number, description?: string, error?: string }} The roll results with rolls array, total, and description
  */
 export function rollDice({ sides = 6, count = 1 } = {}) {
   if (sides < 2) {
