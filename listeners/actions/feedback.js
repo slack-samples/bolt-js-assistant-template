@@ -17,8 +17,11 @@ export const feedbackActionCallback = async ({ ack, body, client, logger }) => {
       return;
     }
 
-    const message_ts = body.message.ts;
-    const channel_id = body.channel.id;
+    const message_ts = body.message?.ts;
+    const channel_id = body.channel?.id;
+    if (!message_ts || !channel_id) {
+      return;
+    }
     const user_id = body.user.id;
     const value = body.actions[0].value;
 
