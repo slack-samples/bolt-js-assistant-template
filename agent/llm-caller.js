@@ -10,7 +10,7 @@ const openai = new OpenAI({
  * Stream an LLM response to prompts with an example dice rolling function
  *
  * @param {import("@slack/web-api").ChatStreamer} streamer - Slack chat stream
- * @param {Array} prompts - OpenAI ResponseInputParam messages
+ * @param {any[]} prompts - OpenAI response messages
  *
  * @see {@link https://docs.slack.dev/tools/bolt-js/web#sending-streaming-messages}
  * @see {@link https://platform.openai.com/docs/guides/text}
@@ -97,7 +97,7 @@ export async function callLLM(streamer, prompts) {
               {
                 type: 'task_update',
                 id: call.call_id,
-                title: result.description,
+                title: result.description ?? 'Completed',
                 status: 'complete',
               },
             ],
