@@ -8,16 +8,15 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
  * and generate AI responses.
  *
  * @param {Object} params
- * @param {import("@slack/web-api").WebClient} params.client - Slack web client.
- * @param {import("@slack/bolt").Context} params.context - Event context.
  * @param {import("@slack/logger").Logger} params.logger - Logger instance.
  * @param {import("@slack/types").MessageEvent} params.message - The incoming message.
  * @param {import("@slack/bolt").SayFn} params.say - Function to send messages.
+ * @param {import("@slack/bolt").SayStreamFn} params.sayStream - Function to start a chat stream.
  * @param {Function} params.setStatus - Function to set assistant status.
  *
  * @see {@link https://docs.slack.dev/reference/events/message}
  */
-export const message = async ({ client, context, logger, message, say, setStatus }) => {
+export const message = async ({ logger, message, say, sayStream, setStatus }) => {
   /**
    * Messages sent to the Assistant can have a specific message subtype.
    *
@@ -31,9 +30,6 @@ export const message = async ({ client, context, logger, message, say, setStatus
   }
 
   try {
-    const { channel, thread_ts } = message;
-    const { userId, teamId } = context;
-
     // The first example shows a message with thinking steps that has different chunks to construct and update a plan alongside text outputs.
     if (message.text === 'Wonder a few deep thoughts.') {
       await setStatus({
@@ -49,11 +45,7 @@ export const message = async ({ client, context, logger, message, say, setStatus
 
       await sleep(4000);
 
-      const streamer = client.chatStream({
-        channel: channel,
-        recipient_team_id: teamId,
-        recipient_user_id: userId,
-        thread_ts: thread_ts,
+      const streamer = sayStream({
         task_display_mode: 'plan',
       });
 
@@ -143,11 +135,7 @@ export const message = async ({ client, context, logger, message, say, setStatus
         ],
       });
 
-      const streamer = client.chatStream({
-        channel: channel,
-        recipient_team_id: teamId,
-        recipient_user_id: userId,
-        thread_ts: thread_ts,
+      const streamer = sayStream({
         task_display_mode: 'timeline',
       });
 
