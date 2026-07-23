@@ -11,7 +11,7 @@
     },
     "bot_user": {
       "display_name": "Bolt JS AI Agent",
-      "always_online": false
+      "always_online": true
     },
     "assistant_view": {
       "assistant_description": "An AI Agent built with Bolt for JavaScript, at your service!",
