@@ -30,7 +30,7 @@
     "openai": "^7.45.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.14",
+    "@biomejs/biome": "2.6.4",
     "@slack/cli-hooks": "^2.0.0",
     "@types/node": "^24.19.0",
     "typescript": "^7.0.2"
