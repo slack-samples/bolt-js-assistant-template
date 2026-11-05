@@ -26,13 +26,13 @@
   },
   "dependencies": {
     "@slack/bolt": "^5.1.0",
-    "dotenv": "~18.0.4",
-    "openai": "^7.23.0"
+    "dotenv": "~18.0.9",
+    "openai": "^7.45.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.14",
+    "@biomejs/biome": "2.6.4",
     "@slack/cli-hooks": "^2.0.0",
-    "@types/node": "^24.19.0",
+    "@types/node": "^24.19.2",
     "typescript": "^7.0.2"
   }
 }
