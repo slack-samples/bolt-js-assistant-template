@@ -6,10 +6,10 @@ This Bolt for JavaScript template demonstrates how to build [AI Apps](https://do
 
 Setting up this app can provide you with an AI agent that enables the following flow:
 
-* Users open the assistant side panel in Slack and see suggested prompts.
-* The app calls OpenAI's API when a user selects a prompt or sends a message.
-* The app streams in its response, which can be a combination of text and tasks.
-* Users provide feedback via buttons.
+- Users open the assistant side panel in Slack and see suggested prompts.
+- The app calls OpenAI's API when a user selects a prompt or sends a message.
+- The app streams in its response, which can be a combination of text and tasks.
+- Users provide feedback via buttons.
 
 ## Setup
 
@@ -99,6 +99,7 @@ After the Slack app has been created you're all set to configure the LLM provide
 <details><summary><strong>  Using Terminal </strong></summary>
 
 #### Create Your Slack App
+
 1. Open [https://api.slack.com/apps/new](https://api.slack.com/apps/new) and choose "From an app manifest"
 2. Choose the workspace you want to install the application to
 3. Copy the contents of [manifest.json](./manifest.json) into the text box that says `*Paste your manifest code here*` (within the JSON tab) and click _Next_
